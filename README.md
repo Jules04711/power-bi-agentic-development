@@ -1,6 +1,6 @@
 # Power BI Agentic Development
 
-A reference workspace for **agentic development of Power BI semantic models and reports** using [Claude Code](https://claude.com/claude-code). The single artefact is `STLA_Power_BI/STLA_20-F_Model.pbip` — a thick PBIP project that analyses Stellantis N.V.'s SEC Form 20-F filing and FY2025 adjusted operating income (AOI) reconciliation. Everything in the repo — the 88 measures, two calculated tables, three report pages, three developer-doc books, and the four PowerShell automation scripts — was authored interactively with an AI agent driving TOM, PBIR, and TMDL from a chat session.
+A reference workspace for **agentic development of Power BI semantic models and reports** using [Claude Code](https://claude.com/claude-code). The single Power BI File is `STLA_Power_BI/STLA_20-F_Model.pbip` — a thick PBIP project that analyses Stellantis N.V.'s SEC Form 20-F filing and FY2025 adjusted operating income (AOI) reconciliation. Everything in the repo — the 88 measures, two calculated tables, three report pages, three developer-doc books, and the four PowerShell automation scripts — was authored interactively with an AI agent driving TOM, PBIR, and TMDL from a chat session.
 
 This README is a working guide to that workflow: how the skills, scripts, and docs fit together, and how to extend the project the same way it was built.
 
