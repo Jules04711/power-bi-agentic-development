@@ -1,0 +1,200 @@
+table Filings
+	lineageTag: 09cc4bb5-002d-46f7-86b1-c72e8e572880
+
+	column accessionNumber
+		dataType: string
+		lineageTag: 83dbb907-30d3-4e43-b47b-f737cc09d129
+		summarizeBy: none
+		sourceColumn: accessionNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column filingDate
+		dataType: dateTime
+		formatString: mmmm d\, yyyy
+		lineageTag: d2ba884e-d357-450f-8333-67f37f681114
+		summarizeBy: none
+		sourceColumn: filingDate
+
+		variation Variation
+			isDefault
+			relationship: 59078b06-3e9f-4897-9658-e1f7866e822d
+			defaultHierarchy: LocalDateTable_c65fd1d9-7618-4d9b-8771-dd4725909678.'Date Hierarchy'
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column reportDate
+		dataType: string
+		lineageTag: b366e6ac-0511-4cf9-960b-efb162eaf782
+		summarizeBy: none
+		sourceColumn: reportDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column acceptanceDateTime
+		dataType: string
+		lineageTag: dfb63a33-cf14-4172-9b34-becdda9c63dc
+		summarizeBy: none
+		sourceColumn: acceptanceDateTime
+
+		annotation SummarizationSetBy = Automatic
+
+	column act
+		dataType: string
+		lineageTag: 531561e5-37f2-4483-905f-c7a571989cb8
+		summarizeBy: none
+		sourceColumn: act
+
+		annotation SummarizationSetBy = Automatic
+
+	column form
+		dataType: string
+		lineageTag: 4878c127-4816-4624-ab20-966074ae8dc0
+		summarizeBy: none
+		sourceColumn: form
+
+		annotation SummarizationSetBy = Automatic
+
+	column fileNumber
+		dataType: string
+		lineageTag: ce25280b-64d1-4bda-bef7-036da8baeb72
+		summarizeBy: none
+		sourceColumn: fileNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column filmNumber
+		dataType: string
+		lineageTag: 8c257b17-0c47-43d9-a7a9-c9387d1a6fb3
+		summarizeBy: none
+		sourceColumn: filmNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column items
+		dataType: string
+		lineageTag: dad860d6-d0d2-45a9-9590-25f1790f31d3
+		summarizeBy: none
+		sourceColumn: items
+
+		annotation SummarizationSetBy = Automatic
+
+	column size
+		dataType: string
+		lineageTag: 95c116db-247e-40ae-b131-ebac46e40ccb
+		summarizeBy: none
+		sourceColumn: size
+
+		annotation SummarizationSetBy = Automatic
+
+	column isXBRL
+		dataType: string
+		lineageTag: e424b016-4a16-47ba-9734-b27b8c6b1a66
+		summarizeBy: none
+		sourceColumn: isXBRL
+
+		annotation SummarizationSetBy = Automatic
+
+	column isInlineXBRL
+		dataType: string
+		lineageTag: e72d0cc9-0eda-4280-b2ac-c346e98615d8
+		summarizeBy: none
+		sourceColumn: isInlineXBRL
+
+		annotation SummarizationSetBy = Automatic
+
+	column primaryDocument
+		dataType: string
+		lineageTag: b117cea5-0b65-4212-bfc5-c39c9f6fe360
+		summarizeBy: none
+		sourceColumn: primaryDocument
+
+		annotation SummarizationSetBy = Automatic
+
+	column primaryDocDescription
+		dataType: string
+		lineageTag: d3f9d80d-acce-41a7-a596-604cab4e1a82
+		summarizeBy: none
+		sourceColumn: primaryDocDescription
+
+		annotation SummarizationSetBy = Automatic
+
+	column URL
+		dataType: string
+		lineageTag: a1fd4767-29bc-4519-a484-9c177cb40ebc
+		dataCategory: WebUrl
+		summarizeBy: none
+		sourceColumn: URL
+
+		annotation SummarizationSetBy = Automatic
+
+	column core_type
+		dataType: string
+		lineageTag: 577c530d-5ba4-40b2-9ddc-0263d91851ad
+		summarizeBy: none
+		sourceColumn: core_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column Group = ```
+			
+			SWITCH( 
+			    TRUE(), 
+			    'Filings'[form] IN {"10-K", "ARS"}, "Annual Filings", 
+			    'Filings'[form] IN {"3", "4", "5"}, "3,4,5",
+			    'Filings'[form] IN {"10-Q"}, "Quarterly Filings",
+			    CONTAINSSTRING(Filings[form], "424") || Filings[form] IN {"S-8","S-3ASR"}, "Registration Statements",
+			    Filings[form] IN {"PX14A6G", "DEFA14A", "PRE 14A"}, "Proxy Filings",
+			    Filings[form] IN {"8-K"}, "Current Reports",
+			    "Other" 
+			)
+			```
+		lineageTag: 7a5a6b65-cb16-421a-9579-2ed9b2a9515d
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column isXBRLNumeric
+		dataType: string
+		lineageTag: fb76dd0d-4ea9-4ebe-af08-79de49fa87e7
+		summarizeBy: none
+		sourceColumn: isXBRLNumeric
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Filings = m
+		mode: import
+		source =
+				let
+				    Source = Json.Document(Web.Contents ("https://data.sec.gov/submissions/CIK" & CIK1 & ".json")),
+				        filings = Source[filings],
+				        recent = filings[recent],
+				        ToTable = #table(type table Value.Type(recent), List.Zip(Record.FieldValues(recent))),
+				    #"Added Custom1" = Table.AddColumn(ToTable, "URL", each let
+				
+				            Pt1 = "https://www.sec.gov/Archives/edgar/data/" & CIK1 & "/",
+				
+				            Pt2 = Text.Replace([accessionNumber], "-", ""),
+				
+				            Pt3 = "/"&[primaryDocument],
+				
+				            Link = Pt1&Pt2&Pt3,
+				
+				            WebPage = Web.Page(Web.Contents(Link))
+				
+				        in
+				
+				            Link)
+				in
+				    #"Added Custom1"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

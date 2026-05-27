@@ -1,0 +1,40 @@
+{
+  "position": {
+    "x": 20,
+    "y": 20,
+    "z": 1000,
+    "height": 60,
+    "width": 1240,
+    "tabOrder": 1000
+  },
+  "name": "title_textbox",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "horizontalTextAlignment": "left",
+                "textRuns": [
+                  {
+                    "textStyle": {
+                      "fontSize": "22pt",
+                      "fontFamily": "Segoe UI",
+                      "fontWeight": "bold",
+                      "color": "#1F3A5F"
+                    },
+                    "value": "FY2025 AOI Overview  -  FaSTLAne 2030 Cost-Cut Lens"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,273 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "51df4f4a7bec61583069",
+  "position": {
+    "x": 675.67211351115338,
+    "y": 300.15679900779026,
+    "z": 4000,
+    "height": 369.128999630857,
+    "width": 583.70917934706449,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "risk_heatmap"
+                    }
+                  },
+                  "Property": "Risk_ID"
+                }
+              },
+              "queryRef": "risk_heatmap.Risk_ID",
+              "nativeQueryRef": "Risk ID",
+              "displayName": "Risk ID"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "risk_heatmap"
+                        }
+                      },
+                      "Property": "Risk_Score"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(risk_heatmap.Risk_Score)",
+              "nativeQueryRef": "Risk_Score",
+              "displayName": "Risk_Score"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "risk_heatmap"
+                    }
+                  },
+                  "Property": "Risk_Category"
+                }
+              },
+              "queryRef": "risk_heatmap.Risk_Category",
+              "nativeQueryRef": "Risk Category",
+              "displayName": "Risk Category"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "risk_heatmap"
+                    }
+                  },
+                  "Property": "Description"
+                }
+              },
+              "queryRef": "risk_heatmap.Description",
+              "nativeQueryRef": "Description"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "risk_heatmap"
+                    }
+                  },
+                  "Property": "Risk_Level"
+                }
+              },
+              "queryRef": "risk_heatmap.Risk_Level",
+              "nativeQueryRef": "Risk Level",
+              "displayName": "Risk Level"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Aggregation": {
+                "Expression": {
+                  "Column": {
+                    "Expression": {
+                      "SourceRef": {
+                        "Entity": "risk_heatmap"
+                      }
+                    },
+                    "Property": "Risk_Score"
+                  }
+                },
+                "Function": 0
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "values": [
+        {
+          "properties": {
+            "urlIcon": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "underline": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
+                }
+              }
+            },
+            "backColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#F4F4F4'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "grid": [
+        {
+          "properties": {
+            "rowPadding": {
+              "expr": {
+                "Literal": {
+                  "Value": "9D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "250.28296926065735D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "risk_heatmap.Description"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "146.80969741624608D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "risk_heatmap.Risk_Category"
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "stylePreset": [
+        {
+          "properties": {
+            "name": {
+              "expr": {
+                "Literal": {
+                  "Value": "'None'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#F4F4F4'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

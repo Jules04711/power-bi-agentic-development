@@ -1,0 +1,61 @@
+table Company_Info
+	lineageTag: 0fc02fea-1fda-46a8-9c58-0bb04dae6ef4
+
+	column Name
+		dataType: string
+		lineageTag: 2d7b04da-dce3-449f-93e1-be1e711000b6
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column CIK
+		dataType: string
+		lineageTag: 0845c1e8-2c2a-4a64-ba86-f544e88ab80b
+		summarizeBy: none
+		sourceColumn: CIK
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Entity Type'
+		dataType: string
+		lineageTag: 2a35a5c9-26e0-4a8a-b204-34dd39d731ce
+		summarizeBy: none
+		sourceColumn: Entity Type
+
+		annotation SummarizationSetBy = Automatic
+
+	column SIC
+		dataType: string
+		lineageTag: 6b7b8930-aaf9-499b-83e2-549074a58a39
+		summarizeBy: none
+		sourceColumn: SIC
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'SIC Description'
+		dataType: string
+		lineageTag: d3893ece-75c9-4b64-ba67-91ad78b10a0c
+		summarizeBy: none
+		sourceColumn: SIC Description
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Company_Info = m
+		mode: import
+		source =
+				let
+				    Source = Json.Document(Web.Contents ("https://data.sec.gov/submissions/CIK" & CIK1 & ".json")),
+				        name = Source[name],
+				        cik = Source[cik],
+				        entityType = Source[entityType],
+				        sic = Source[sic],
+				        sicDescription = Source[sicDescription],
+				        Result = #table({"Name", "CIK", "Entity Type", "SIC", "SIC Description"}, {{name, cik, entityType, sic, sicDescription}})
+				in
+				    Result
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

@@ -1,0 +1,46 @@
+relationship 9876b2d9-cff2-4e45-bf88-cfe4a1875fff
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Subsidiaries.filingDate
+	toColumn: LocalDateTable_40952e81-a547-4fa3-af86-6ccb90c40d56.Date
+
+relationship 9b0f3b6c-872e-448a-8de9-20600d0a8804
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Subsidiaries.reportDate
+	toColumn: LocalDateTable_1a651386-880b-4951-9c01-5794cae81844.Date
+
+relationship 15ec0f2e-6b46-4ad4-aac2-d7eaffc43941
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 20F_EDGAR_API.filingDate
+	toColumn: LocalDateTable_c66ed359-3be5-4e3b-a32d-5438c14f428a.Date
+
+relationship 94f55b53-76f0-4130-b7b5-14f3a5ab6e0f
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 20F_EDGAR_API.reportDate
+	toColumn: LocalDateTable_1b65a3b8-c669-40f9-994a-ee3e01b09b09.Date
+
+relationship 42084b2e-7948-458e-8e72-ada86d61ba33
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 20F_EDGAR_API.acceptanceDateTime
+	toColumn: LocalDateTable_1d857d04-f1e6-452e-8e95-9eca4458dfbd.Date
+
+relationship d949ace9-3857-4046-96ea-9dbe2ebbe0ed
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 20-F.filingDate
+	toColumn: LocalDateTable_b7a7ee13-618b-40ab-a5ea-37ff69f02ddd.Date
+
+relationship 694a144a-6be8-46ee-a459-ecf2bff026f5
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 20-F.reportDate
+	toColumn: LocalDateTable_30ee5d0d-5350-417e-8a92-e381a4714ccc.Date
+
+relationship af8968ad-00bb-4e0e-91b1-dad305c8d84b
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: Company_Name.Company_Name
+	toColumn: CIK_Lookup.'Company Name'
+
+relationship 59078b06-3e9f-4897-9658-e1f7866e822d
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Filings.filingDate
+	toColumn: LocalDateTable_c65fd1d9-7618-4d9b-8771-dd4725909678.Date
+

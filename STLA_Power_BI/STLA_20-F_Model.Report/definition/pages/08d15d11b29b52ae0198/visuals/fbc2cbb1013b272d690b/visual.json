@@ -1,0 +1,229 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "fbc2cbb1013b272d690b",
+  "position": {
+    "x": 61.308622776059288,
+    "y": 268.2252246452594,
+    "z": 3000,
+    "height": 432.99214835591874,
+    "width": 599.03633504107927,
+    "tabOrder": 3000
+  },
+  "visual": {
+    "visualType": "pythonVisual",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "risk_heatmap"
+                    }
+                  },
+                  "Property": "Description"
+                }
+              },
+              "queryRef": "risk_heatmap.Description",
+              "nativeQueryRef": "Description"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "risk_heatmap"
+                    }
+                  },
+                  "Property": "Impact"
+                }
+              },
+              "queryRef": "risk_heatmap.Impact",
+              "nativeQueryRef": "Impact"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "risk_heatmap"
+                    }
+                  },
+                  "Property": "Impact_Label"
+                }
+              },
+              "queryRef": "risk_heatmap.Impact_Label",
+              "nativeQueryRef": "Impact_Label"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "risk_heatmap"
+                    }
+                  },
+                  "Property": "Likelihood"
+                }
+              },
+              "queryRef": "risk_heatmap.Likelihood",
+              "nativeQueryRef": "Likelihood"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "risk_heatmap"
+                    }
+                  },
+                  "Property": "Likelihood_Label"
+                }
+              },
+              "queryRef": "risk_heatmap.Likelihood_Label",
+              "nativeQueryRef": "Likelihood_Label"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "risk_heatmap"
+                    }
+                  },
+                  "Property": "Mentions"
+                }
+              },
+              "queryRef": "risk_heatmap.Mentions",
+              "nativeQueryRef": "Mentions"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "risk_heatmap"
+                    }
+                  },
+                  "Property": "Quadrant"
+                }
+              },
+              "queryRef": "risk_heatmap.Quadrant",
+              "nativeQueryRef": "Quadrant"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "risk_heatmap"
+                    }
+                  },
+                  "Property": "Risk_Category"
+                }
+              },
+              "queryRef": "risk_heatmap.Risk_Category",
+              "nativeQueryRef": "Risk_Category"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "risk_heatmap"
+                    }
+                  },
+                  "Property": "Risk_Color"
+                }
+              },
+              "queryRef": "risk_heatmap.Risk_Color",
+              "nativeQueryRef": "Risk_Color"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "risk_heatmap"
+                    }
+                  },
+                  "Property": "Risk_ID"
+                }
+              },
+              "queryRef": "risk_heatmap.Risk_ID",
+              "nativeQueryRef": "Risk_ID"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "risk_heatmap"
+                    }
+                  },
+                  "Property": "Risk_Level"
+                }
+              },
+              "queryRef": "risk_heatmap.Risk_Level",
+              "nativeQueryRef": "Risk_Level"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "risk_heatmap"
+                    }
+                  },
+                  "Property": "Risk_Score"
+                }
+              },
+              "queryRef": "risk_heatmap.Risk_Score",
+              "nativeQueryRef": "Risk_Score"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "script": [
+        {
+          "properties": {
+            "source": {
+              "expr": {
+                "Literal": {
+                  "Value": "'# The following code to create a dataframe and remove duplicated rows is always executed and acts as a preamble for your script: \n\n# dataset = pandas.DataFrame(Description, Impact, Impact_Label, Likelihood, Likelihood_Label, Mentions, Quadrant, Risk_Category, Risk_Color, Risk_ID, Risk_Level, Risk_Score)\n# dataset = dataset.drop_duplicates()\n\n# Paste or type your script code here:\n\n# =============================================================================\n# POWER BI PYTHON VISUAL: Stellantis Risk Assessment Heatmap\n# =============================================================================\n# \n# TABLE: risk_heatmap (sourced from Stellantis-FY2025-20-F.pdf)\n# \n# SETUP IN POWER BI:\n# ------------------\n# 1. Add a Python visual to your report canvas\n# 2. Drag ALL these fields from GM_Risk table to the Values well:\n#    - Risk_ID\n#    - Risk_Category\n#    - Description\n#    - Mentions\n#    - Likelihood\n#    - Impact\n#    - Risk_Score\n#    - Risk_Level\n#    - Likelihood_Label\n#    - Impact_Label\n#    - Risk_Color\n#    - Quadrant\n#\n# 3. Paste this script into the Python script editor\n# 4. Click Run (play icon)\n#\n# =============================================================================\n\nimport pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport matplotlib.patches as mpatches\nfrom matplotlib.colors import LinearSegmentedColormap\n\n# =============================================================================\n# POWER BI DATA INPUT\n# =============================================================================\n# Power BI creates ''dataset'' DataFrame from fields in Values well\n#\n# For local testing, uncomment below:\n# dataset = pd.read_csv(''GM_Risk.csv'')\n# =============================================================================\n\ndf = dataset.copy()\n\n# =============================================================================\n# CONFIGURATION\n# =============================================================================\nFIGURE_WIDTH = 12\nFIGURE_HEIGHT = 9\nBASE_BUBBLE_SIZE = 180\nBUBBLE_SCALE_FACTOR = 14\nJITTER_STRENGTH = 0.12\n\n# Fallback colors if Risk_Color column not available\nRISK_COLORS_FALLBACK = {\n    ''Critical'': ''#FF0000'',\n    ''Medium'': ''#FFE66D'',\n    ''Low'': ''#4ECDC4''\n}\n\n# Heatmap background gradient\nHEATMAP_COLORS = [''#2ECC71'', ''#F1C40F'', ''#E67E22'', ''#E74C3C'', ''#C0392B'']\n\n# =============================================================================\n# CREATE VISUALIZATION\n# =============================================================================\n\nfig, ax = plt.subplots(figsize=(FIGURE_WIDTH, FIGURE_HEIGHT))\n\n# Build 5x5 risk matrix background\nrisk_matrix = np.array([\n    [5, 10, 15, 20, 25],   # Impact = 5\n    [4,  8, 12, 16, 20],   # Impact = 4\n    [3,  6,  9, 12, 15],   # Impact = 3\n    [2,  4,  6,  8, 10],   # Impact = 2\n    [1,  2,  3,  4,  5]    # Impact = 1\n])\n\n# Create colormap and plot background\ncmap = LinearSegmentedColormap.from_list(''risk'', HEATMAP_COLORS, N=100)\nim = ax.imshow(risk_matrix, cmap=cmap, aspect=''auto'',\n               extent=[0.5, 5.5, 0.5, 5.5], alpha=0.55, vmin=1, vmax=25)\n\n# Add grid lines\nfor i in range(1, 6):\n    ax.axhline(y=i + 0.5, color=''white'', linewidth=2.5)\n    ax.axvline(x=i + 0.5, color=''white'', linewidth=2.5)\n\n# =============================================================================\n# PLOT RISK BUBBLES\n# =============================================================================\n\nnp.random.seed(42)\n\nfor idx, row in df.iterrows():\n    # Position with jitter\n    x = row[''Likelihood''] + np.random.uniform(-JITTER_STRENGTH, JITTER_STRENGTH)\n    y = row[''Impact''] + np.random.uniform(-JITTER_STRENGTH, JITTER_STRENGTH)\n    \n    # Bubble size based on mentions\n    size = BASE_BUBBLE_SIZE + (row[''Mentions''] * BUBBLE_SCALE_FACTOR)\n    \n    # Use Risk_Color from data if available, otherwise fallback\n    if ''Risk_Color'' in df.columns and pd.notna(row[''Risk_Color'']):\n        color = row[''Risk_Color'']\n    else:\n        color = RISK_COLORS_FALLBACK.get(row[''Risk_Level''], ''#888888'')\n    \n    # Plot bubble with white border\n    ax.scatter(x, y, s=size, c=color, edgecolors=''white'',\n               linewidths=2.5, alpha=0.9, zorder=5)\n    \n    # Add Risk_ID label\n    ax.annotate(row[''Risk_ID''], (x, y),\n                fontsize=9, fontweight=''bold'', color=''white'',\n                ha=''center'', va=''center'', zorder=6)\n\n# =============================================================================\n# FORMAT AXES\n# =============================================================================\n\nax.set_xlim(0.5, 5.5)\nax.set_ylim(0.5, 5.5)\nax.set_xticks([1, 2, 3, 4, 5])\nax.set_yticks([1, 2, 3, 4, 5])\n\n# Use Likelihood_Label and Impact_Label if available\nif ''Likelihood_Label'' in df.columns:\n    # Extract unique labels for x-axis\n    x_labels = [''1 - Very Low'', ''2 - Low'', ''3 - Medium'', ''4 - High'', ''5 - Very High'']\nelse:\n    x_labels = [''1\\nVery Low'', ''2\\nLow'', ''3\\nMedium'', ''4\\nHigh'', ''5\\nVery High'']\n\nif ''Impact_Label'' in df.columns:\n    y_labels = [''1 - Very Low'', ''2 - Low'', ''3 - Medium'', ''4 - High'', ''5 - Very High'']\nelse:\n    y_labels = [''1\\nVery Low'', ''2\\nLow'', ''3\\nMedium'', ''4\\nHigh'', ''5\\nVery High'']\n\nax.set_xticklabels(x_labels, fontsize=10)\nax.set_yticklabels(y_labels, fontsize=10)\n\nax.set_xlabel(''LIKELIHOOD'', fontsize=13, fontweight=''bold'', labelpad=12)\nax.set_ylabel(''IMPACT'', fontsize=13, fontweight=''bold'', labelpad=12)\nax.set_title(''Stellantis N.V. FY 2025\\nEnterprise Risk Assessment Matrix'',\n             fontsize=15, fontweight=''bold'', pad=18)\n\n# =============================================================================\n# QUADRANT LABELS\n# =============================================================================\n\nax.text(1.5, 5.3, ''Low Likelihood\\nHigh Impact'', fontsize=9, fontstyle=''italic'',\n        ha=''center'', color=''#444444'', alpha=0.85)\nax.text(4.5, 5.3, ''CRITICAL\\nZONE'', fontsize=10, fontweight=''bold'',\n        ha=''center'', color=''#C0392B'')\nax.text(1.5, 0.7, ''Low Priority'', fontsize=9, fontstyle=''italic'',\n        ha=''center'', color=''#444444'', alpha=0.85)\nax.text(4.5, 0.7, ''High Likelihood\\nLow Impact'', fontsize=9, fontstyle=''italic'',\n        ha=''center'', color=''#444444'', alpha=0.85)\n\n# =============================================================================\n# LEGEND\n# =============================================================================\n\nlegend_elements = [\n    mpatches.Patch(facecolor=''#FF0000'', edgecolor=''white'', label=''Critical''),\n    mpatches.Patch(facecolor=''#FFE66D'', edgecolor=''white'', label=''Medium''),\n    mpatches.Patch(facecolor=''#4ECDC4'', edgecolor=''white'', label=''Low''),\n]\n\nlegend = ax.legend(handles=legend_elements, \n                   loc=''upper left'',\n                   bbox_to_anchor=(1.01, 1.0),\n                   title=''Risk Level'', \n                   framealpha=0.95, \n                   fontsize=11,\n                   title_fontsize=12,\n                   borderaxespad=0)\n\n# =============================================================================\n# COLORBAR\n# =============================================================================\n\ncbar = plt.colorbar(im, ax=ax, shrink=0.55, pad=0.02)\ncbar.set_label(''Risk Score (Likelihood × Impact)'', fontsize=10, labelpad=10)\n\n# =============================================================================\n# FOOTNOTE\n# =============================================================================\n\nax.text(0.98, 0.02, ''Bubble size = 20-F Item 3.D mention frequency'',\n        transform=ax.transAxes, fontsize=9, ha=''right'', va=''bottom'',\n        style=''italic'', color=''#555555'',\n        bbox=dict(boxstyle=''round'', facecolor=''white'', alpha=0.85, edgecolor=''#cccccc''))\n\n# Summary stats\ntotal_risks = len(df)\ncritical_count = len(df[df[''Risk_Level''] == ''Critical''])\nax.text(0.02, 0.02, f''Total Risks: {total_risks}  |  Critical: {critical_count}'',\n        transform=ax.transAxes, fontsize=9, ha=''left'', va=''bottom'',\n        color=''#555555'',\n        bbox=dict(boxstyle=''round'', facecolor=''white'', alpha=0.85, edgecolor=''#cccccc''))\n\nplt.tight_layout()\nplt.show()'"
+                }
+              }
+            },
+            "provider": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Python'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

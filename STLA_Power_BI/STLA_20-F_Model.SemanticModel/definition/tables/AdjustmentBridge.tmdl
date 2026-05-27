@@ -1,0 +1,41 @@
+table AdjustmentBridge
+	lineageTag: 7c6502df-b530-4fee-932d-74364ba1d68c
+
+	column Adjustment
+		dataType: string
+		lineageTag: 912f1b04-3fd9-44b2-b0ea-e37d6f0b48e7
+		sourceColumn: [Adjustment]
+		sortByColumn: Sort
+
+	column Sort
+		dataType: int64
+		isHidden
+		lineageTag: 4d7b5471-960c-4169-ac71-32d175b94e05
+		sourceColumn: [Sort]
+
+	column Category
+		dataType: string
+		lineageTag: 5a77ff90-b5b2-4d30-b527-0929d7d1b584
+		sourceColumn: [Category]
+
+	partition AdjustmentBridge = calculated
+		source =
+				DATATABLE (
+				    "Adjustment", STRING,
+				    "Sort",       INTEGER,
+				    "Category",   STRING,
+				    {
+				        { "Product Plan Realignment",     1, "Strategic Reset"   },
+				        { "Platform Impairments",          2, "Strategic Reset"   },
+				        { "Warranty Estimate Change",      3, "Operational"       },
+				        { "Battery JV Charges",            4, "Non-Recurring"     },
+				        { "Hydrogen Fuel Cell Exit",       5, "Non-Recurring"     },
+				        { "Restructuring & Other",         6, "Operational"       },
+				        { "Takata Recall",                 7, "Non-Recurring"     },
+				        { "CAFE Penalty",                  8, "Non-Recurring"     },
+				        { "Other Impairments",             9, "Strategic Reset"   },
+				        { "Turkiye Disposal",             10, "Non-Recurring"     },
+				        { "Other Adjustments",            11, "Operational"       }
+				    }
+				)
+

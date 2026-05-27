@@ -1,0 +1,310 @@
+expression fxGetEntities = ```
+		(SourceLink as any)=>
+		
+		let
+		
+		    Source = Web.Page(Web.Contents(SourceLink)),
+		
+		    TablesOnly = Table.SelectRows(Source, each ([Source] = "Table")),
+		
+		    Transform = Table.AddColumn(TablesOnly, "Custom", each
+		
+		        let
+		            
+		            Transpose = Table.Transpose([Data]),
+		
+		            RemoveBlanks = Table.SelectRows(Transpose, each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+		
+		            RemoveDupes = Table.Distinct(RemoveBlanks),
+		
+		            TransposeAgain = Table.Transpose(RemoveDupes)
+		
+		
+		       in
+		
+		            TransposeAgain),
+		
+		    Combine = Table.Combine(Transform[Custom]),
+		
+		    SelectColumns = Table.SelectColumns(Combine, {"Column1", "Column2"})
+		
+		in
+		    SelectColumns
+		```
+	lineageTag: d81eec88-a40d-40fe-86f4-0e95e1e7fda8
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Function
+
+expression CIK1 = "0001605484" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 6ea28cd2-512d-438f-ae76-e7e9fe56a880
+
+	annotation PBI_ResultType = Text
+
+	annotation PBI_NavigationStepName = Navigation
+
+expression 20f_full_text =
+		// Stellantis N.V. Form 20-F FY2025 — full-document text extraction
+		// Source: STLA_Power_BI/resources/Stellantis-FY2025-20-F.pdf (356 pages)
+		let
+		    Source = Pdf.Tables(File.Contents("C:\Users\golfc\OneDrive\Desktop\Power BI Agentic Development\STLA_Power_BI\resources\Stellantis-FY2025-20-F.pdf"), [Implementation="1.3"]),
+		
+		    // Filter to pages only
+		    PagesOnly = Table.SelectRows(Source, each [Kind] = "Page"),
+		
+		    // Add page number
+		    WithPageNum = Table.AddIndexColumn(PagesOnly, "Page_Number", 1, 1, Int64.Type),
+		
+		    // Extract text by combining all columns from each page's data table
+		    WithText = Table.AddColumn(WithPageNum, "Page_Text", each
+		        let
+		            dataTable = [Data],
+		            textList = Table.ToList(dataTable, (row) =>
+		                Text.Combine(
+		                    List.Transform(row, each if _ = null then "" else Text.From(_)),
+		                    " "
+		                )
+		            ),
+		            combined = Text.Combine(textList, " "),
+		            cleaned = Text.Replace(Text.Replace(combined, "  ", " "), "   ", " ")
+		        in
+		            Text.Trim(cleaned), type text),
+		
+		    // Remove Stellantis 20-F repeating headers
+		    WithCleanText = Table.TransformColumns(WithText, {{"Page_Text", each
+		        let
+		            headers = {
+		                "NOTES TO THE CONSOLIDATED FINANCIAL STATEMENTS",
+		                "Stellantis N.V.",
+		                "STELLANTIS N.V.",
+		                "Form 20-F",
+		                "FORM 20-F"
+		            },
+		
+		            removeHeader = (txt as text, header as text) as text =>
+		                if Text.Contains(txt, header) then
+		                    Text.Trim(Text.AfterDelimiter(txt, header))
+		                else
+		                    txt,
+		
+		            cleanedText = List.Accumulate(headers, _, (current, header) => removeHeader(current, header))
+		        in
+		            cleanedText, type text}}),
+		
+		    // Remove duplicate Page_Text rows (keeps first occurrence)
+		    RemoveDuplicates = Table.Distinct(WithCleanText, {"Page_Text"}),
+		
+		    // Add character count
+		    WithCharCount = Table.AddColumn(RemoveDuplicates, "Char_Count", each Text.Length([Page_Text]), Int64.Type),
+		
+		    // Add word count (approximate)
+		    WithWordCount = Table.AddColumn(WithCharCount, "Word_Count", each
+		        List.Count(Text.Split([Page_Text], " ")), Int64.Type),
+		
+		    // Classify each page into Stellantis Form 20-F sections
+		    // Page anchors (PDF pages, 1-indexed): TOC=3, Board Report=5, Mgmt Report=9,
+		    // Risk Factors=81-103 (Item 3.D), Corporate Governance=104-186,
+		    // Controls=187-190, Financial Statements=191-201, Notes=202-331,
+		    // Other Information=332-352, Cross Reference=353-355, Signatures=356
+		    WithSection = Table.AddColumn(WithWordCount, "Section", each
+		        if [Page_Number] <= 4 then "Cover & TOC"
+		        else if [Page_Number] >= 5 and [Page_Number] <= 8 then "Board Report - Introduction"
+		        else if [Page_Number] >= 9 and [Page_Number] <= 29 then "Management Report - Business Overview"
+		        else if [Page_Number] >= 30 and [Page_Number] <= 38 then "Environmental & Regulatory Matters"
+		        else if [Page_Number] >= 39 and [Page_Number] <= 66 then "Financial Overview & Results of Operations"
+		        else if [Page_Number] >= 67 and [Page_Number] <= 79 then "Liquidity & Capital Resources / Risk Management"
+		        else if [Page_Number] >= 80 and [Page_Number] <= 103 then "Item 3.D - Risk Factors"
+		        else if [Page_Number] >= 104 and [Page_Number] <= 161 then "Corporate Governance"
+		        else if [Page_Number] >= 162 and [Page_Number] <= 186 then "Remuneration Report"
+		        else if [Page_Number] >= 187 and [Page_Number] <= 190 then "Controls & Procedures"
+		        else if [Page_Number] >= 191 and [Page_Number] <= 201 then "Consolidated Financial Statements"
+		        else if [Page_Number] >= 202 and [Page_Number] <= 331 then "Notes to Financial Statements"
+		        else if [Page_Number] >= 332 and [Page_Number] <= 352 then "Other Information"
+		        else if [Page_Number] >= 353 and [Page_Number] <= 355 then "Form 20-F Cross Reference"
+		        else "Signatures", type text),
+		
+		    // Add Part classification (Form 20-F structure)
+		    WithPart = Table.AddColumn(WithSection, "Part", each
+		        if [Page_Number] <= 4 then "Cover"
+		        else if [Page_Number] <= 79 then "Board / Management Report"
+		        else if [Page_Number] <= 103 then "Part I - Risk Factors"
+		        else if [Page_Number] <= 186 then "Governance & Remuneration"
+		        else if [Page_Number] <= 190 then "Controls & Procedures"
+		        else if [Page_Number] <= 331 then "Financial Statements & Notes"
+		        else "Other Information", type text),
+		
+		    // Select final columns
+		    FinalTable = Table.SelectColumns(WithPart, {"Page_Number", "Part", "Section", "Page_Text", "Char_Count", "Word_Count"})
+		in
+		    FinalTable
+	lineageTag: e110555f-e518-47fe-a7da-fa9b7708f0f1
+	queryGroup: 'Text Analysis'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 20f_risk_section =
+		// Stellantis N.V. Form 20-F FY2025 — Item 3.D Risk Factors only
+		// Filters the full-document scan to the Risk Factors section
+		// (PDF pages 80–103 in Stellantis-FY2025-20-F.pdf).
+		let
+		    Source = Pdf.Tables(File.Contents("C:\Users\golfc\OneDrive\Desktop\Power BI Agentic Development\STLA_Power_BI\resources\Stellantis-FY2025-20-F.pdf"), [Implementation="1.3"]),
+		
+		    PagesOnly = Table.SelectRows(Source, each [Kind] = "Page"),
+		    WithPageNum = Table.AddIndexColumn(PagesOnly, "Page_Number", 1, 1, Int64.Type),
+		
+		    WithText = Table.AddColumn(WithPageNum, "Page_Text", each
+		        let
+		            dataTable = [Data],
+		            textList = Table.ToList(dataTable, (row) =>
+		                Text.Combine(
+		                    List.Transform(row, each if _ = null then "" else Text.From(_)),
+		                    " "
+		                )
+		            ),
+		            combined = Text.Combine(textList, " "),
+		            cleaned = Text.Replace(Text.Replace(combined, "  ", " "), "   ", " ")
+		        in
+		            Text.Trim(cleaned), type text),
+		
+		    WithCleanText = Table.TransformColumns(WithText, {{"Page_Text", each
+		        let
+		            headers = {
+		                "NOTES TO THE CONSOLIDATED FINANCIAL STATEMENTS",
+		                "Stellantis N.V.",
+		                "STELLANTIS N.V.",
+		                "Form 20-F",
+		                "FORM 20-F"
+		            },
+		            removeHeader = (txt as text, header as text) as text =>
+		                if Text.Contains(txt, header) then
+		                    Text.Trim(Text.AfterDelimiter(txt, header))
+		                else
+		                    txt,
+		            cleanedText = List.Accumulate(headers, _, (current, header) => removeHeader(current, header))
+		        in
+		            cleanedText, type text}}),
+		
+		    RemoveDuplicates = Table.Distinct(WithCleanText, {"Page_Text"}),
+		
+		    WithCharCount = Table.AddColumn(RemoveDuplicates, "Char_Count", each Text.Length([Page_Text]), Int64.Type),
+		    WithWordCount = Table.AddColumn(WithCharCount, "Word_Count", each
+		        List.Count(Text.Split([Page_Text], " ")), Int64.Type),
+		
+		    WithSection = Table.AddColumn(WithWordCount, "Section", each
+		        if [Page_Number] <= 4 then "Cover & TOC"
+		        else if [Page_Number] >= 5 and [Page_Number] <= 8 then "Board Report - Introduction"
+		        else if [Page_Number] >= 9 and [Page_Number] <= 29 then "Management Report - Business Overview"
+		        else if [Page_Number] >= 30 and [Page_Number] <= 38 then "Environmental & Regulatory Matters"
+		        else if [Page_Number] >= 39 and [Page_Number] <= 66 then "Financial Overview & Results of Operations"
+		        else if [Page_Number] >= 67 and [Page_Number] <= 79 then "Liquidity & Capital Resources / Risk Management"
+		        else if [Page_Number] >= 80 and [Page_Number] <= 103 then "Item 3.D - Risk Factors"
+		        else if [Page_Number] >= 104 and [Page_Number] <= 161 then "Corporate Governance"
+		        else if [Page_Number] >= 162 and [Page_Number] <= 186 then "Remuneration Report"
+		        else if [Page_Number] >= 187 and [Page_Number] <= 190 then "Controls & Procedures"
+		        else if [Page_Number] >= 191 and [Page_Number] <= 201 then "Consolidated Financial Statements"
+		        else if [Page_Number] >= 202 and [Page_Number] <= 331 then "Notes to Financial Statements"
+		        else if [Page_Number] >= 332 and [Page_Number] <= 352 then "Other Information"
+		        else if [Page_Number] >= 353 and [Page_Number] <= 355 then "Form 20-F Cross Reference"
+		        else "Signatures", type text),
+		
+		    WithPart = Table.AddColumn(WithSection, "Part", each
+		        if [Page_Number] <= 4 then "Cover"
+		        else if [Page_Number] <= 79 then "Board / Management Report"
+		        else if [Page_Number] <= 103 then "Part I - Risk Factors"
+		        else if [Page_Number] <= 186 then "Governance & Remuneration"
+		        else if [Page_Number] <= 190 then "Controls & Procedures"
+		        else if [Page_Number] <= 331 then "Financial Statements & Notes"
+		        else "Other Information", type text),
+		
+		    FinalTable = Table.SelectColumns(WithPart, {"Page_Number", "Part", "Section", "Page_Text", "Char_Count", "Word_Count"}),
+		    #"Filtered Rows" = Table.SelectRows(FinalTable, each ([Section] = "Item 3.D - Risk Factors"))
+		in
+		    #"Filtered Rows"
+	lineageTag: 38e77de8-47af-4e7d-b5ff-89d983364a56
+	queryGroup: 'Text Analysis'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression RiskCategories_Config =
+		// ============================================================================
+		// QUERY: GM_RiskCategories_Config
+		// Configuration table - defines risk categories and search patterns
+		// Modify this to add/remove/customize risk categories
+		// ============================================================================
+		
+		
+		let
+		    RiskConfig = #table(
+		        {"Risk_ID", "Risk_Category", "Search_Pattern", "Description", "Base_Impact"},
+		        {
+		            {"R01", "Tariffs & Trade Policy", "tariff|duties|trade policy|trade partner|import|customs|USMCA|cross-border", "U.S. tariffs on imports from Mexico, Canada, China, EU; impact on North America profitability (e.g., Jeep Cherokee from Toluca)", 5},
+		            {"R02", "Regulatory & Compliance", "regulate|regulation|emissions standard|fuel economy|CAFE|Euro 6|Euro 7|EPA|NHTSA|CARB|homologation|legal requirement", "Vehicle safety, emissions, fuel economy regulations across EU, U.S., China; Euro 7, GSR, FMVSS", 5},
+		            {"R03", "Competition & Market", "competition|competitive|market share|competitor|consolidation|new entrant|Chinese OEM|BYD|Chery|Leapmotor|pricing pressure", "Competitive pressure from legacy OEMs (VW, Toyota, Ford, GM) and new Chinese entrants (BYD, Chery)", 4},
+		            {"R04", "Supply Chain & Raw Materials", "supply chain|supplier|shortage|procurement|semiconductor|chip|raw material|lithium|cobalt|nickel|rare earth|battery material", "Component shortages, raw material price volatility, battery material sourcing, supplier financial health", 4},
+		            {"R05", "EV Transition & Electrification", "electric vehicle|electrification|BEV|PHEV|REEV|battery|charging|ZEV|Dare Forward|powertrain|hybrid", "Demand-led BEV adoption uncertainty, EV program cancellations, platform impairments, battery capacity resizing", 5},
+		            {"R06", "Strategic Reset & Execution", "strategic plan|reassessment|strategic reset|leadership transition|Investor Day|execution|restructuring|reorganization", "New CEO Antonio Filosa-led strategic reassessment; pending May 2026 Investor Day; execution risk on portfolio realignment", 4},
+		            {"R07", "Cybersecurity & IT Systems", "cyber|data breach|security incident|hack|malfunction|disruption|information technology|electronic control|connected vehicle", "IT system breaches, vehicle electronic control system compromise, data privacy", 4},
+		            {"R08", "Macroeconomic & FX", "economic condition|recession|inflation|interest rate|exchange rate|currency|cyclicality|consumer confidence|disposable income", "Cyclical demand, inflation, interest rates, Euro/USD/BRL/ARS FX exposure across regions", 3},
+		            {"R09", "Financial Services & Credit", "financial services|auto financing|credit risk|residual value|dealer financing|floorplan|SFS|leasing|BNP Paribas|Santander", "SFS U.S., Leasys, JV partnerships with BNPP and SCF; credit losses, residual values, dealer floorplan", 3},
+		            {"R10", "Labor Relations", "labor|union|UAW|Unifor|workforce|strike|collective bargaining|works council|European Works Council|industrial relations", "UAW, Unifor, European Works Council relations; 85% of workforce under collective bargaining", 4},
+		            {"R11", "Product Quality & Recalls", "warranty|recall|defect|quality|product liability|Takata|airbag|safety recall|class action", "Quality challenges on new platforms/powertrains, Takata airbag litigation, recall costs", 4},
+		            {"R12", "Emissions Litigation & Investigations", "emissions investigation|diesel|Euro 5|KBA|RDW|consumer fraud|emissions non-compliance|Kraftfahrt|public prosecutor", "Ongoing diesel emissions investigations in France, Germany (KBA), Netherlands, UK, Italy; FCA/PSA legacy exposure", 4},
+		            {"R13", "China & Asia Pacific Operations", "China|Chinese|joint venture|DPCA|Dongfeng|Leapmotor|FIAPL|Tofas|geopolitical|Asia Pacific", "DPCA JV, Leapmotor International (51% owned), Tofas JV in Turkey; declining China market share (0.2%)", 4},
+		            {"R14", "Climate & Sustainability", "climate|greenhouse|GHG|CO2|carbon|sustainability|ESG|end-of-life|ELV|recycl|circular economy", "EU CO2 fleet targets (€95/g penalty), ELV directive, decarbonization commitments", 3},
+		            {"R15", "Autonomous & Software", "autonomous|self-driving|automated driving|ADAS|driver assist|software-defined|over-the-air|OTA|connectivity", "Autonomous features (GSR mandates), software-defined vehicle development, Archer Aviation investment", 3},
+		            {"R16", "Pension & Benefit Obligations", "pension|defined benefit|retiree|OPEB|funding shortfall|actuarial", "Defined benefit pension funding shortfalls across legacy FCA and PSA plans", 3},
+		            {"R17", "Political & Geopolitical Instability", "political|geopolitical|social instability|conflict|sanctions|banned countries|Russia|Ukraine|Middle East", "Operations exposure in MEA, banned countries (Russia, Iran, Syria, Cuba, Sudan, Belarus); regional instability", 3},
+		            {"R18", "Natural Disasters & Operations", "earthquake|disaster|flood|natural disaster|plant shutdown|production disruption|force majeure", "Plant shutdowns, natural disasters affecting manufacturing footprint (EU, NA, SA, Africa)", 2}
+		        }
+		    )
+		in
+		    RiskConfig
+	lineageTag: fd7a7bb5-ff7d-4113-8a34-a4ef391a564e
+	queryGroup: 'Text Analysis'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression fnCountPattern = ```
+		// ============================================================================
+		// QUERY: fnCountPattern (Helper Function)
+		// Counts occurrences of a pattern in text - MUST CREATE THIS FIRST
+		// ============================================================================
+		
+		let
+		    fnCountPattern = (text as text, pattern as text) as number =>
+		    let
+		        terms = Text.Split(pattern, "|"),
+		        lowerText = Text.Lower(text),
+		        
+		        counts = List.Transform(terms, each 
+		            let
+		                term = Text.Trim(Text.Lower(_)),
+		                originalLength = Text.Length(lowerText),
+		                replacedText = Text.Replace(lowerText, term, ""),
+		                replacedLength = Text.Length(replacedText),
+		                termLength = Text.Length(term),
+		                count = if termLength > 0 then (originalLength - replacedLength) / termLength else 0
+		            in
+		                Number.Round(count, 0)
+		        ),
+		        
+		        totalCount = List.Sum(counts)
+		    in
+		        totalCount
+		in
+		    fnCountPattern
+		```
+	lineageTag: 3183f621-0d20-4eaa-89bd-aab7bde328d4
+	queryGroup: 'Text Analysis'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Function
+

@@ -1,0 +1,189 @@
+table 20F_EDGAR_API
+	lineageTag: f3c15418-637b-4c7c-aca8-c205fc9a44fd
+
+	column accessionNumber
+		dataType: string
+		lineageTag: 174c6bce-5fd9-4c83-b181-83fcbdd4205a
+		summarizeBy: none
+		sourceColumn: accessionNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column filingDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 650fbb79-7b55-4e0a-8402-dd46fee82d82
+		summarizeBy: none
+		sourceColumn: filingDate
+
+		variation Variation
+			isDefault
+			relationship: 15ec0f2e-6b46-4ad4-aac2-d7eaffc43941
+			defaultHierarchy: LocalDateTable_c66ed359-3be5-4e3b-a32d-5438c14f428a.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column reportDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 45fe9aee-dfd3-442a-8a3e-84533cddc364
+		summarizeBy: none
+		sourceColumn: reportDate
+
+		variation Variation
+			isDefault
+			relationship: 94f55b53-76f0-4130-b7b5-14f3a5ab6e0f
+			defaultHierarchy: LocalDateTable_1b65a3b8-c669-40f9-994a-ee3e01b09b09.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column acceptanceDateTime
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: e06c7aae-2563-488b-afa0-5bdafdfd4de7
+		summarizeBy: none
+		sourceColumn: acceptanceDateTime
+
+		variation Variation
+			isDefault
+			relationship: 42084b2e-7948-458e-8e72-ada86d61ba33
+			defaultHierarchy: LocalDateTable_1d857d04-f1e6-452e-8e95-9eca4458dfbd.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column act
+		dataType: int64
+		formatString: 0
+		lineageTag: cd9918fe-845a-44d1-a0de-a52f843ff814
+		summarizeBy: sum
+		sourceColumn: act
+
+		annotation SummarizationSetBy = Automatic
+
+	column form
+		dataType: string
+		lineageTag: 65347202-1ba5-4ffc-a130-7a01487dfa6a
+		summarizeBy: none
+		sourceColumn: form
+
+		annotation SummarizationSetBy = Automatic
+
+	column fileNumber
+		dataType: string
+		lineageTag: aee8a711-738d-46f2-801e-ecb295fb2f89
+		summarizeBy: none
+		sourceColumn: fileNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column filmNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: 344dd558-ab9c-422c-9667-c5dc63d0bd61
+		summarizeBy: sum
+		sourceColumn: filmNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column items
+		dataType: string
+		lineageTag: 0d55b321-927b-452c-a0c6-9827cc11586c
+		summarizeBy: none
+		sourceColumn: items
+
+		annotation SummarizationSetBy = Automatic
+
+	column size
+		dataType: int64
+		formatString: 0
+		lineageTag: d4931c63-7ac6-4bbb-8ea2-d122de8159d7
+		summarizeBy: sum
+		sourceColumn: size
+
+		annotation SummarizationSetBy = Automatic
+
+	column isXBRL
+		dataType: int64
+		formatString: 0
+		lineageTag: 6c3ad9e3-0de8-4352-b7c4-60e48966c8ef
+		summarizeBy: sum
+		sourceColumn: isXBRL
+
+		annotation SummarizationSetBy = Automatic
+
+	column isInlineXBRL
+		dataType: int64
+		formatString: 0
+		lineageTag: 86b92385-4c56-4a34-a23a-3319bee2df8f
+		summarizeBy: sum
+		sourceColumn: isInlineXBRL
+
+		annotation SummarizationSetBy = Automatic
+
+	column primaryDocument
+		dataType: string
+		lineageTag: 6f951947-8445-4ac9-b783-9892b86aeb43
+		summarizeBy: none
+		sourceColumn: primaryDocument
+
+		annotation SummarizationSetBy = Automatic
+
+	column primaryDocDescription
+		dataType: string
+		lineageTag: d1f687c6-7de4-4658-94c7-7006f39d4626
+		summarizeBy: none
+		sourceColumn: primaryDocDescription
+
+		annotation SummarizationSetBy = Automatic
+
+	column core_type
+		dataType: string
+		lineageTag: 048e00bf-c0f8-472f-8d48-40e1db243a67
+		summarizeBy: none
+		sourceColumn: core_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column isXBRLNumeric
+		dataType: string
+		lineageTag: 8769b533-6735-4ce1-9cdb-e253705f752d
+		summarizeBy: none
+		sourceColumn: isXBRLNumeric
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 20F_EDGAR_API = m
+		mode: import
+		source =
+				let
+				    CIK = CIK1,
+				    Source = Json.Document(Web.Contents("https://data.sec.gov/submissions/CIK" & CIK & ".json")),
+				
+				    filings = Source[filings],
+				
+				    recent = filings[recent],
+				
+				    #"Converted to Table" = Record.ToTable(recent),
+				
+				    #"Extracted Values" = Table.TransformColumns(#"Converted to Table", {"Value", each Text.Combine(List.Transform(_, Text.From), "||"), type text}),
+				
+				    #"Split Column by Delimiter" = Table.SplitColumn(#"Extracted Values", "Value", Splitter.SplitTextByDelimiter("||", QuoteStyle.Csv)),
+				
+				    #"Transposed Table" = Table.Transpose(#"Split Column by Delimiter"),
+				
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Transposed Table", [PromoteAllScalars=true]),
+				
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Promoted Headers",{{"accessionNumber", type text}, {"filingDate", type date}, {"reportDate", type date}, {"acceptanceDateTime", type datetime}, {"act", Int64.Type}, {"form", type text}, {"fileNumber", type text}, {"filmNumber", Int64.Type}, {"items", type text}, {"size", Int64.Type}, {"isXBRL", Int64.Type}, {"isInlineXBRL", Int64.Type}, {"primaryDocument", type text}, {"primaryDocDescription", type text}}),
+				
+				    Filter10K = Table.SelectRows(#"Changed Type1", each Text.StartsWith([form], "20-F"))
+				in
+				    Filter10K
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

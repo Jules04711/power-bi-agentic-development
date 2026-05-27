@@ -1,0 +1,31 @@
+table Region
+	lineageTag: dd50331b-dcb3-46cb-9afa-5440949d7ac9
+
+	column Region
+		dataType: string
+		lineageTag: f6fe5d36-ccb6-4802-bdb2-9b2a27ee1f91
+		sourceColumn: [Region]
+		sortByColumn: Sort
+
+	column Sort
+		dataType: int64
+		isHidden
+		lineageTag: c047ea83-3923-4072-a28d-948d7018d29f
+		sourceColumn: [Sort]
+
+	partition Region = calculated
+		source =
+				DATATABLE (
+				    "Region", STRING,
+				    "Sort",   INTEGER,
+				    {
+				        { "North America",         1 },
+				        { "Enlarged Europe",       2 },
+				        { "Middle East & Africa",  3 },
+				        { "South America",         4 },
+				        { "China India APAC",      5 },
+				        { "Maserati",              6 },
+				        { "Other",                 7 }
+				    }
+				)
+

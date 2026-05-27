@@ -1,0 +1,354 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 5721.14306640625,
+        "y": 529.14288330078125
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 1430,
+            "y": 725.2684522434422
+          },
+          "nodeIndex": "CIK_Lookup",
+          "nodeLineageTag": "323d1563-0af5-4f09-b618-28f6960fdeac",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 2840,
+            "y": 699.2684522434422
+          },
+          "nodeIndex": "Company_Info",
+          "nodeLineageTag": "0fc02fea-1fda-46a8-9c58-0bb04dae6ef4",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 1146,
+            "y": 737.2684522434422
+          },
+          "nodeIndex": "Company_Name",
+          "nodeLineageTag": "837fb4dc-03dc-477d-9317-895d8c2adb55",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 7
+        },
+        {
+          "location": {
+            "x": 578,
+            "y": 639.2684522434422
+          },
+          "nodeIndex": "Filings",
+          "nodeLineageTag": "09cc4bb5-002d-46f7-86b1-c72e8e572880",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 9
+        },
+        {
+          "location": {
+            "x": 10,
+            "y": 653.2684522434422
+          },
+          "nodeIndex": "Subsidiaries",
+          "nodeLineageTag": "6643fd9d-3d4a-4c0a-bf4f-c060b44044b0",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 10
+        },
+        {
+          "location": {
+            "x": 3682,
+            "y": 735.2684522434422
+          },
+          "nodeIndex": "Significant Accounting Policies",
+          "nodeLineageTag": "b0b25bae-983a-4049-8db1-5fa885bc7a4a",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 11
+        },
+        {
+          "location": {
+            "x": 5398.8697946999964,
+            "y": 649.2684522434422
+          },
+          "nodeIndex": "PeerComparison",
+          "nodeLineageTag": "d72e7291-2eff-4414-9339-991fb6e105e7",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 12
+        },
+        {
+          "location": {
+            "x": 4006,
+            "y": 983.139301785684
+          },
+          "nodeIndex": "public anomalies",
+          "nodeLineageTag": "1b2426c3-4a08-432c-a01c-b94420db5701",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 13
+        },
+        {
+          "location": {
+            "x": 4579.1455993911759,
+            "y": -50
+          },
+          "nodeIndex": "public balance_sheets",
+          "nodeLineageTag": "88fdcbf4-dff1-4d48-b1f2-a65779ce5d89",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 14
+        },
+        {
+          "location": {
+            "x": 4588.1244953140449,
+            "y": 970.15974987631489
+          },
+          "nodeIndex": "public cash_flow_statements",
+          "nodeLineageTag": "140a022c-7bad-48d2-85d9-92764ee3f8fa",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 15
+        },
+        {
+          "location": {
+            "x": 4441.0260837757878,
+            "y": 686.45603934926271
+          },
+          "nodeIndex": "public companies",
+          "nodeLineageTag": "a75a17d0-09c7-4102-80b1-ee8dec98431b",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 16
+        },
+        {
+          "location": {
+            "x": 4868.7152127526206,
+            "y": 304.93702328709196
+          },
+          "nodeIndex": "public data_refresh_log",
+          "nodeLineageTag": "9aa9e0a7-1288-47ec-a63a-35789a999ca1",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 17
+        },
+        {
+          "location": {
+            "x": 4008.60737791984,
+            "y": 629.37103011628619
+          },
+          "nodeIndex": "public financial_ratios",
+          "nodeLineageTag": "5c78d9e5-1302-4957-8d79-8f728a6cca95",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 18
+        },
+        {
+          "location": {
+            "x": 4880.8697946999964,
+            "y": 637.32733089784574
+          },
+          "nodeIndex": "public income_statements",
+          "nodeLineageTag": "57a07379-c680-417a-9e0f-7d46876fa85f",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 19
+        },
+        {
+          "location": {
+            "x": 5682.8697946999964,
+            "y": 649.2684522434422
+          },
+          "nodeIndex": "public latest_financial_summary",
+          "nodeLineageTag": "2a3968bf-1efa-470b-9189-c489d69a85de",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 20
+        },
+        {
+          "location": {
+            "x": 4301.3605235512359,
+            "y": 326.7351102121479
+          },
+          "nodeIndex": "public market_data",
+          "nodeLineageTag": "73787797-04a4-4337-8e8e-e036394d733d",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 21
+        },
+        {
+          "location": {
+            "x": 4295.6307134609669,
+            "y": 1252.5369044868844
+          },
+          "nodeIndex": "public risk_scores",
+          "nodeLineageTag": "78d2b502-467f-47b6-86e1-1c94638d57f9",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 22
+        },
+        {
+          "location": {
+            "x": 6230.8697946999964,
+            "y": 649.2684522434422
+          },
+          "nodeIndex": "public news_articles",
+          "nodeLineageTag": "1b272ef9-0361-4ff9-8a78-b78e1b19cad6",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 23
+        },
+        {
+          "location": {
+            "x": 6514.8697946999964,
+            "y": 649.2684522434422
+          },
+          "nodeIndex": "public sec_filing_comparisons",
+          "nodeLineageTag": "661fa46f-9e15-4534-ae25-6830122f8b69",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 24
+        },
+        {
+          "location": {
+            "x": 6788.8697946999964,
+            "y": 699.2684522434422
+          },
+          "nodeIndex": "Date",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 7062.8697946999964,
+            "y": 649.2684522434422
+          },
+          "nodeIndex": "risk_heatmap",
+          "nodeLineageTag": "5fb323fd-edcc-45ab-9160-c8d9497c7148",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2556,
+            "y": 747.2684522434422
+          },
+          "nodeIndex": "20F_URL_Path",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 862,
+            "y": 639.2684522434422
+          },
+          "nodeIndex": "20F_EDGAR_API",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 294,
+            "y": 653.2684522434422
+          },
+          "nodeIndex": "20-F",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 3124,
+            "y": 747.2684522434422
+          },
+          "nodeIndex": "FiscalYear",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1988,
+            "y": 711.2684522434422
+          },
+          "nodeIndex": "20F_Filing_Summary",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

@@ -1,0 +1,30 @@
+# Normalize line endings so cross-platform contributors get consistent diffs.
+# Default: let Git auto-detect text vs binary, and check out with native EOL.
+* text=auto
+
+# Force LF for shell scripts and Power Query / TMDL / DAX / Markdown so the
+# files work cleanly when read by tools that don't tolerate CRLF.
+*.sh        text eol=lf
+*.tmdl      text eol=lf
+*.dax       text eol=lf
+*.m         text eol=lf
+
+# Power BI Project files are JSON-shaped or YAML-shaped text — keep text.
+*.pbip            text
+*.pbir            text
+*.platform        text
+*.json            text
+*.md              text
+
+# PowerShell scripts: keep CRLF on Windows, LF on POSIX (default `text` handles).
+*.ps1       text
+
+# Binary blobs Git should never try to diff or merge.
+*.pdf       binary
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.ico       binary
+*.pbix      binary
+*.abf       binary

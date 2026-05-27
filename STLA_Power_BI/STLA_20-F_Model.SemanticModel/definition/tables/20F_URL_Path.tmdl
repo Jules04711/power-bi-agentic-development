@@ -1,0 +1,62 @@
+table 20F_URL_Path
+	lineageTag: 8a3f473e-378c-42ce-bf6a-ef36ac0b32aa
+
+	column 20F_URL_Path
+		dataType: string
+		lineageTag: 084d4bfc-1778-4006-8b1b-8cbb27512ac9
+		summarizeBy: none
+		sourceColumn: 20F_URL_Path
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 20F_URL_Path = m
+		mode: import
+		queryGroup: 'EDGAR 10-K'
+		source =
+				let
+				
+				    Source = Json.Document(Web.Contents("https://data.sec.gov/submissions/CIK" & CIK1 & ".json")),
+				
+				    filings = Source[filings],
+				
+				    recent = filings[recent],
+				
+				    #"Converted to Table" = Record.ToTable(recent),
+				
+				    #"Extracted Values" = Table.TransformColumns(#"Converted to Table", {"Value", each Text.Combine(List.Transform(_, Text.From), "||"), type text}),
+				
+				    #"Split Column by Delimiter" = Table.SplitColumn(#"Extracted Values", "Value", Splitter.SplitTextByDelimiter("||", QuoteStyle.Csv)),
+				
+				    #"Transposed Table" = Table.Transpose(#"Split Column by Delimiter"),
+				
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Transposed Table", [PromoteAllScalars=true]),
+				
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Promoted Headers",{{"accessionNumber", type text}, {"filingDate", type date}, {"reportDate", type date}, {"acceptanceDateTime", type datetime}, {"act", Int64.Type}, {"form", type text}, {"fileNumber", type text}, {"filmNumber", Int64.Type}, {"items", type text}, {"size", Int64.Type}, {"isXBRL", Int64.Type}, {"isInlineXBRL", Int64.Type}, {"primaryDocument", type text}, {"primaryDocDescription", type text}}),
+				
+				    Filter10K = Table.SelectRows(#"Changed Type1", each [form] = "20-F"),
+				    #"Extracted Year" = Table.TransformColumns(Filter10K,{{"reportDate", Date.Year, Int64.Type}}),
+				    FilteredAfterYear = Table.SelectRows(#"Extracted Year", each [reportDate] = FiscalYear),
+				    AddDocumentLink = Table.AddColumn(FilteredAfterYear, "DocumentLink", each let
+				
+				            Pt1 = "https://www.sec.gov/Archives/edgar/data/" & CIK1 & "/",
+				
+				            Pt2 = Text.Replace([accessionNumber], "-", ""),
+				
+				            Pt3 = "/"&[primaryDocument],
+				
+				            Link = Pt1&Pt2&Pt3,
+				
+				            WebPage = Web.Page(Web.Contents(Link))
+				
+				        in
+				
+				            Link),
+				    #"Removed Other Columns" = Table.SelectColumns(AddDocumentLink,{"DocumentLink"}),
+				    DocumentLink = #"Removed Other Columns"{0}[DocumentLink]
+				in
+				    DocumentLink
+
+	annotation PBI_ResultType = Text
+
+	annotation PBI_NavigationStepName = Navigation
+

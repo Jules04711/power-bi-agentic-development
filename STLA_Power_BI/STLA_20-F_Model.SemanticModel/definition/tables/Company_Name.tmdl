@@ -1,0 +1,22 @@
+table Company_Name
+	lineageTag: 837fb4dc-03dc-477d-9317-895d8c2adb55
+
+	column Company_Name
+		dataType: string
+		lineageTag: 7a52e941-e1c6-4686-8888-6ea52582d157
+		summarizeBy: none
+		sourceColumn: Company_Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Company_Name = m
+		mode: import
+		source =
+				let
+				    Source = Json.Document(Web.Contents("https://data.sec.gov/submissions/CIK" & CIK1 & ".json")),
+				    name1 = Source[name]
+				in
+				    name1
+
+	annotation PBI_ResultType = Text
+

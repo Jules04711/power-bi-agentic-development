@@ -1,0 +1,85 @@
+# ---------------------------------------------------------------------------
+# Power BI Agentic Development — workspace .gitignore
+# ---------------------------------------------------------------------------
+
+# --- Workspace-level ephemeral artefacts -----------------------------------
+tmp/
+STLA_Power_BI/tmp/
+
+# --- Per-session backups (large; restore via Copy-Item if needed) ----------
+STLA_Power_BI/.claude/backups/
+
+# --- pbir-cli local state (not portable) -----------------------------------
+STLA_Power_BI/.pbir/
+
+# --- Power BI Desktop runtime caches / autosaves ---------------------------
+*.pbiviz.tmp
+*.bak
+*.~tmp
+*Cache/
+
+# --- Power BI Desktop per-user state -------------------------------------
+# `.pbi/` holds cache.abf (~30MB AS snapshot, regenerable from TMDL), plus
+# per-machine editorSettings.json / localSettings.json. Microsoft's PBIP
+# guidance treats this directory as user-local state — exclude entirely.
+**/.pbi/
+
+# --- PBIP analysis cache (regenerable) -------------------------------------
+**/.pbidesktopcache/
+**/AnalysisServicesWorkspace_*/
+
+# --- Power BI Desktop user state ------------------------------------------
+**/RawDataDownload/
+**/QueryDataDownload/
+
+# --- Python (knowledge-base scripts may import these) ----------------------
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# --- Node (if mermaid-cli or similar is installed locally) -----------------
+node_modules/
+package-lock.json
+
+# --- Windows / OS noise ----------------------------------------------------
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# --- macOS noise (in case of cross-platform contributors) ------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# --- Editor / IDE state ----------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- Claude Code local state (keep `commands/` and `scripts/`) -------------
+.claude/settings.local.json
+.claude/projects/
+.claude/todos/
+.claude/shell-snapshots/
+.claude/statsig/
+STLA_Power_BI/.claude/settings.local.json
+STLA_Power_BI/.claude/projects/
+
+# --- NuGet / TOM cache (regenerable; in %TEMP%) ----------------------------
+# (no entries needed — %TEMP% is outside the workspace)
+
+# --- Secrets ---------------------------------------------------------------
+*.env
+.env
+.env.*
+secrets.json
+credentials.json
+**/credentials/
+*.pem
+*.key

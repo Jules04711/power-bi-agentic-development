@@ -1,0 +1,209 @@
+table 20-F
+	lineageTag: 4ad1aa5e-35db-42ee-a286-2bb93fa22189
+
+	column filingDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 1cb4eb6b-dfe0-4189-926d-c53f1b3e6cc2
+		summarizeBy: none
+		sourceColumn: filingDate
+
+		variation Variation
+			isDefault
+			relationship: d949ace9-3857-4046-96ea-9dbe2ebbe0ed
+			defaultHierarchy: LocalDateTable_b7a7ee13-618b-40ab-a5ea-37ff69f02ddd.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column reportDate
+		dataType: dateTime
+		formatString: mmmm d\, yyyy
+		lineageTag: 5b3898d9-f203-468f-8d07-e22cf0a48e82
+		summarizeBy: none
+		sourceColumn: reportDate
+
+		variation Variation
+			isDefault
+			relationship: 694a144a-6be8-46ee-a459-ecf2bff026f5
+			defaultHierarchy: LocalDateTable_30ee5d0d-5350-417e-8a92-e381a4714ccc.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column form
+		dataType: string
+		lineageTag: 6191daa0-6b12-4f03-bde9-ee0ae136e35f
+		summarizeBy: none
+		sourceColumn: form
+
+		annotation SummarizationSetBy = Automatic
+
+	column '20F URL'
+		dataType: string
+		lineageTag: 13a8c64b-464c-4802-84d1-ce66fe587c50
+		dataCategory: WebUrl
+		summarizeBy: none
+		sourceColumn: 20F URL
+
+		annotation SummarizationSetBy = Automatic
+
+	column FilingLink
+		dataType: string
+		lineageTag: d89910aa-ff7b-4b84-94c6-07b68170b411
+		summarizeBy: none
+		sourceColumn: FilingLink
+
+		annotation SummarizationSetBy = Automatic
+
+	column Subsidiary
+		dataType: string
+		lineageTag: 1849e9bd-3308-4969-9e3e-f9d4d9e5ac0f
+		summarizeBy: none
+		sourceColumn: Subsidiary
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Jurisdiction of Subsidiary'
+		dataType: string
+		lineageTag: 92ddcb25-87fc-4548-84d4-33bda1ad7d00
+		summarizeBy: none
+		sourceColumn: Jurisdiction of Subsidiary
+
+		annotation SummarizationSetBy = Automatic
+
+	column core_type
+		dataType: string
+		lineageTag: c59ff41e-d0e7-4f37-af32-c223bf97b8d6
+		summarizeBy: none
+		sourceColumn: core_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column isXBRLNumeric
+		dataType: string
+		lineageTag: bd126cb1-eede-4220-a507-6b12676e3686
+		summarizeBy: none
+		sourceColumn: isXBRLNumeric
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Ex8.1'
+		dataType: string
+		lineageTag: c70c099a-4c53-4148-a762-0e39a2e75d62
+		summarizeBy: none
+		sourceColumn: Ex8.1
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 20-F = m
+		mode: import
+		source = ```
+				let
+				    CIK = CIK1,
+				    Source = Json.Document(Web.Contents("https://data.sec.gov/submissions/CIK" & CIK & ".json")),
+				
+				    filings = Source[filings],
+				
+				    recent = filings[recent],
+				
+				    #"Converted to Table" = Record.ToTable(recent),
+				
+				    #"Extracted Values" = Table.TransformColumns(#"Converted to Table", {"Value", each Text.Combine(List.Transform(_, Text.From), "||"), type text}),
+				
+				    #"Split Column by Delimiter" = Table.SplitColumn(#"Extracted Values", "Value", Splitter.SplitTextByDelimiter("||", QuoteStyle.Csv)),
+				
+				    #"Transposed Table" = Table.Transpose(#"Split Column by Delimiter"),
+				
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Transposed Table", [PromoteAllScalars=true]),
+				
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Promoted Headers",{{"accessionNumber", type text}, {"filingDate", type date}, {"reportDate", type date}, {"acceptanceDateTime", type datetime}, {"act", Int64.Type}, {"form", type text}, {"fileNumber", type text}, {"filmNumber", Int64.Type}, {"items", type text}, {"size", Int64.Type}, {"isXBRL", Int64.Type}, {"isInlineXBRL", Int64.Type}, {"primaryDocument", type text}, {"primaryDocDescription", type text}}),
+				
+				    Filter20F = Table.SelectRows(#"Changed Type1", each Text.StartsWith([form], "20-F")),
+				    
+				    AddDocumentLink = Table.AddColumn(Filter20F, "DocumentLink", each 
+				        
+				        let
+				
+				            Pt1 = "https://www.sec.gov/Archives/edgar/data/" & CIK & "/",
+				
+				            Pt2 = Text.Replace([accessionNumber], "-", ""),
+				
+				            Pt3 = "/"&[primaryDocument],
+				
+				            Link = Pt1&Pt2&Pt3,
+				
+				            WebPage = Web.Page(Web.Contents(Link))
+				
+				        in
+				
+				            Link),
+				
+				    AddFilingLink = Table.AddColumn(AddDocumentLink, "FilingLink", each 
+				
+				        let
+				
+				            Pt1 = "https://www.sec.gov/Archives/edgar/data/" & CIK & "/",
+				
+				            Pt2 = Text.Replace([accessionNumber], "-", ""),
+				
+				            Pt3 = "/"&[accessionNumber]&"-index.html",
+				
+				            Link = Pt1&Pt2&Pt3,
+				
+				            WebPage = Web.Page(Web.Contents(Link)),
+				
+				            Data = WebPage{0}[Data],
+				
+				            Ex21.1 = Table.FindText(Data, "21.1"),
+				
+				            DocLink = Ex21.1{0}[Document]
+				
+				        in
+				
+				            Link),
+				
+				    AddExhibitLink = Table.AddColumn(AddFilingLink, "Ex8.1", each let
+				
+				            AccessFilingData = Web.Page(Web.Contents([FilingLink])),
+				
+				            Data = AccessFilingData{0}[Data],
+				
+				            Ex8.1 = Table.FindText(Data, "EX-8.1"),
+				
+				            DocLink = Ex8.1{0}[Document],
+				
+				            Pt1 = "https://www.sec.gov/Archives/edgar/data/" & CIK & "/",
+				
+				            Pt2 = Text.Replace([accessionNumber], "-", ""),
+				
+				            Pt3 = "/"&DocLink,
+				
+				            Link = Pt1&Pt2&Pt3,
+				
+				            WebPage = Web.Page(Web.Contents(Link))
+				
+				        in
+				
+				            Link),
+				    
+				    #"Invoked Custom Function" = Table.AddColumn(AddExhibitLink, "Entities", each fxGetEntities([Ex8.1])),
+				
+				    #"Removed Errors" = Table.RemoveRowsWithErrors(#"Invoked Custom Function", {"Entities"}),
+				    #"Expanded Entities" = Table.ExpandTableColumn(#"Removed Errors", "Entities", {"Column1", "Column2"}, {"Subsidiary", "Jurisdiction of Subsidiary"}),
+				    #"Uppercased Text" = Table.TransformColumns(#"Expanded Entities",{{"Subsidiary", Text.Upper, Text.Trim, Text.Clean, type text}, {"Jurisdiction of Subsidiary", Text.Upper, Text.Trim, Text.Clean, type text}}),
+				    #"Filtered Rows" = Table.SelectRows(#"Uppercased Text", each [Subsidiary] <> "NAME OF SUBSIDIARY"),
+				    #"Removed Columns" = Table.RemoveColumns(#"Filtered Rows",{"accessionNumber", "acceptanceDateTime", "act", "fileNumber", "filmNumber", "items", "size", "isXBRL", "isInlineXBRL", "primaryDocument", "primaryDocDescription"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Removed Columns",{{"DocumentLink", "20F URL"}})
+				in
+				    #"Renamed Columns"
+				```
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

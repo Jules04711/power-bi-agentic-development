@@ -1,0 +1,57 @@
+table 'Significant Accounting Policies'
+	lineageTag: b0b25bae-983a-4049-8db1-5fa885bc7a4a
+
+	column Notes
+		dataType: string
+		lineageTag: ffcc8a49-04cb-4cb4-8a9f-e719d8c91de0
+		summarizeBy: none
+		sourceColumn: Notes
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Analysis of income and expense [abstract]'
+		dataType: string
+		lineageTag: 98dd4b4f-14bd-421d-8bfd-8b881a7efa3f
+		summarizeBy: none
+		sourceColumn: Analysis of income and expense [abstract]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Significant Accounting Policies' = m
+		mode: import
+		source =
+				let
+				    url = #"20F_URL_Path",
+				    // Find the position of the last "/" in the URL
+				    lastSlashPosition = Text.PositionOf(Text.Reverse(url), "/"),
+				    // Extract the part of the URL before the last "/"
+				    baseUrl = Text.Start(url, Text.Length(url) - lastSlashPosition),
+				    // Combine the base URL with "/FilingSummary.xml"
+				    filePath = baseUrl & "/FilingSummary.xml",
+				    Table = Xml.Tables(Web.Contents(filePath)),
+				    #"Expanded MyReports" = Table.ExpandTableColumn(Table, "MyReports", {"Report"}, {"Report"}),
+				    #"Expanded Report" = Table.ExpandTableColumn(#"Expanded MyReports", "Report", {"IsDefault", "HasEmbeddedReports", "HtmlFileName", "LongName", "ReportType", "Role", "ShortName", "MenuCategory", "Position", "Attribute:instance", "ParentRole"}, {"IsDefault", "HasEmbeddedReports", "HtmlFileName", "LongName", "ReportType", "Role", "ShortName", "MenuCategory", "Position", "Attribute:instance", "ParentRole"}),
+				    #"Removed Other Columns" = Table.SelectColumns(#"Expanded Report",{"HtmlFileName", "ShortName", "Position"}),
+				    #"Filtered Rows" = Table.SelectRows(#"Removed Other Columns", each ([HtmlFileName] <> null)),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Filtered Rows",{{"Position", Int64.Type}}),
+				    #"Added Custom" = Table.AddColumn(#"Changed Type", "URL", each Text.Start(url, Text.Length(url) - lastSlashPosition) & [HtmlFileName]),
+				    #"Uppercased Text" = Table.TransformColumns(#"Added Custom",{{"ShortName", Text.Upper, type text}}),
+				    #"Filtered Rows1" = Table.SelectRows(#"Uppercased Text", each Text.Contains([ShortName], "NET FINANCIAL EXPENSES/(INCOME)")),
+				    #"Kept First Rows" = Table.FirstN(#"Filtered Rows1",1),
+				    #"Removed Other Columns1" = Table.SelectColumns(#"Kept First Rows",{"URL"}),
+				    url2 = #"Removed Other Columns1"{0}[URL],
+				    Custom1 = Web.Page(Web.Contents(url2)),
+				    #"Filtered Rows2" = Table.SelectRows(Custom1, each ([ClassName] = "report")),
+				    #"Removed Other Columns2" = Table.SelectColumns(#"Filtered Rows2",{"Data"}),
+				    Custom2 = Table.Combine(#"Removed Other Columns2"[Data]),
+				    #"Removed Top Rows" = Table.Skip(Custom2,2),
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Removed Top Rows", [PromoteAllScalars=true]),
+				    #"Renamed Columns" = Table.RenameColumns(#"Promoted Headers",{{"", "Notes"}}),
+				    #"Kept Last Rows" = Table.LastN(#"Renamed Columns", 1)
+				in
+				    #"Kept Last Rows"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

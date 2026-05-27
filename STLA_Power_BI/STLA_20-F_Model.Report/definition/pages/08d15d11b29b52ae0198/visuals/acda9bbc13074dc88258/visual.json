@@ -1,0 +1,60 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "acda9bbc13074dc88258",
+  "position": {
+    "x": 675.67211351115338,
+    "y": 201.80754997119516,
+    "z": 5000,
+    "height": 66.41767467406423,
+    "width": 254.17533192574581,
+    "tabOrder": 5000
+  },
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "risk_heatmap"
+                    }
+                  },
+                  "Property": "Risk_Level"
+                }
+              },
+              "queryRef": "risk_heatmap.Risk_Level",
+              "nativeQueryRef": "Risk Level",
+              "active": true,
+              "displayName": "Risk Level"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "data": [
+        {
+          "properties": {
+            "mode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Dropdown'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {}
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

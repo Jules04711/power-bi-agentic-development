@@ -1,0 +1,61 @@
+table 20F_Filing_Summary
+	lineageTag: 0d6e1efb-4abc-4148-8293-92514ec0efb4
+
+	column HtmlFileName
+		dataType: string
+		lineageTag: c77271a7-f532-4d97-8864-a7ac92dc4c80
+		summarizeBy: none
+		sourceColumn: HtmlFileName
+
+		annotation SummarizationSetBy = Automatic
+
+	column ShortName
+		dataType: string
+		lineageTag: 85fd2a48-df9e-4b75-a388-128b07419589
+		summarizeBy: none
+		sourceColumn: ShortName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Position
+		dataType: int64
+		formatString: 0
+		lineageTag: a5a68faf-1943-403b-9d5d-a77fc6a6c388
+		summarizeBy: sum
+		sourceColumn: Position
+
+		annotation SummarizationSetBy = Automatic
+
+	column URL
+		dataType: string
+		lineageTag: e880946d-4a1d-44b3-aa29-5ea598c0614c
+		summarizeBy: none
+		sourceColumn: URL
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 20F_Filing_Summary = m
+		mode: import
+		source =
+				let
+				    url = #"20F_URL_Path",
+				    // Find the position of the last "/" in the URL
+				    lastSlashPosition = Text.PositionOf(Text.Reverse(url), "/"),
+				    // Extract the part of the URL before the last "/"
+				    baseUrl = Text.Start(url, Text.Length(url) - lastSlashPosition),
+				    // Combine the base URL with "/FilingSummary.xml"
+				    filePath = baseUrl & "/FilingSummary.xml",
+				    Table = Xml.Tables(Web.Contents(filePath)),
+				    #"Expanded MyReports" = Table.ExpandTableColumn(Table, "MyReports", {"Report"}, {"Report"}),
+				    #"Expanded Report" = Table.ExpandTableColumn(#"Expanded MyReports", "Report", {"IsDefault", "HasEmbeddedReports", "HtmlFileName", "LongName", "ReportType", "Role", "ShortName", "MenuCategory", "Position", "Attribute:instance", "ParentRole"}, {"IsDefault", "HasEmbeddedReports", "HtmlFileName", "LongName", "ReportType", "Role", "ShortName", "MenuCategory", "Position", "Attribute:instance", "ParentRole"}),
+				    #"Removed Other Columns" = Table.SelectColumns(#"Expanded Report",{"HtmlFileName", "ShortName", "Position"}),
+				    #"Filtered Rows" = Table.SelectRows(#"Removed Other Columns", each ([HtmlFileName] <> null)),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Filtered Rows",{{"Position", Int64.Type}}),
+				    #"Added Custom" = Table.AddColumn(#"Changed Type", "URL", each Text.Start(url, Text.Length(url) - lastSlashPosition) & [HtmlFileName])
+				in
+				    #"Added Custom"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

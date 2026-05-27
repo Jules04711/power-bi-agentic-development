@@ -1,0 +1,208 @@
+table risk_heatmap
+	lineageTag: 5fb323fd-edcc-45ab-9160-c8d9497c7148
+
+	column Risk_ID
+		dataType: string
+		lineageTag: fdd760ab-3e34-4150-84bf-fe57de566f18
+		summarizeBy: none
+		sourceColumn: Risk_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Risk_Category
+		dataType: string
+		lineageTag: 62b461cf-b539-4273-8ca5-d35a784049bb
+		summarizeBy: none
+		sourceColumn: Risk_Category
+
+		annotation SummarizationSetBy = Automatic
+
+	column Description
+		dataType: string
+		lineageTag: 5517367a-eec7-462d-b4b0-f7aac80850b1
+		summarizeBy: none
+		sourceColumn: Description
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mentions
+		dataType: int64
+		formatString: 0
+		lineageTag: 630f2cb9-9643-4b18-aba7-54f64f08beda
+		summarizeBy: sum
+		sourceColumn: Mentions
+
+		annotation SummarizationSetBy = Automatic
+
+	column Likelihood
+		dataType: int64
+		formatString: 0
+		lineageTag: 1822bad5-ccbf-4695-9b11-490c5ff72e8d
+		summarizeBy: sum
+		sourceColumn: Likelihood
+
+		annotation SummarizationSetBy = Automatic
+
+	column Impact
+		dataType: int64
+		formatString: 0
+		lineageTag: b7eb124f-fae4-4a29-a78e-64e2ed51036e
+		summarizeBy: sum
+		sourceColumn: Impact
+
+		annotation SummarizationSetBy = Automatic
+
+	column Risk_Score
+		dataType: int64
+		formatString: 0
+		lineageTag: ee7616fd-84b9-4d6a-a03a-b80015d655f9
+		summarizeBy: sum
+		sourceColumn: Risk_Score
+
+		annotation SummarizationSetBy = Automatic
+
+	column Risk_Level
+		dataType: string
+		lineageTag: 32e7bbfe-36ed-4c5a-b5c0-d084407ba2d3
+		summarizeBy: none
+		sourceColumn: Risk_Level
+
+		annotation SummarizationSetBy = Automatic
+
+	column Likelihood_Label
+		dataType: string
+		lineageTag: eb6613e5-d44b-489b-9b22-ce0f697d9160
+		summarizeBy: none
+		sourceColumn: Likelihood_Label
+
+		annotation SummarizationSetBy = Automatic
+
+	column Impact_Label
+		dataType: string
+		lineageTag: beb68a63-ed15-4bbc-bfc1-753f0fb69231
+		summarizeBy: none
+		sourceColumn: Impact_Label
+
+		annotation SummarizationSetBy = Automatic
+
+	column Risk_Color
+		dataType: string
+		lineageTag: eb1536fb-f1e4-440c-885b-32218e7e4c10
+		summarizeBy: none
+		sourceColumn: Risk_Color
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quadrant
+		dataType: string
+		lineageTag: 73d66b4f-86a4-4a20-a238-d9b4e54fa63b
+		summarizeBy: none
+		sourceColumn: Quadrant
+
+		annotation SummarizationSetBy = Automatic
+
+	partition risk_heatmap = m
+		mode: import
+		queryGroup: 'Text Analysis'
+		source = ```
+				// ============================================================================
+				// QUERY: GM_RiskHeatmap_Dynamic
+				// Main dynamic query - extracts and scores all risks from the PDF
+				// ============================================================================
+				
+				let
+				    // Get text
+				    RiskText = Lines.ToText(#"20f_risk_section"[Page_Text]),
+				    
+				    // Get risk categories configuration
+				    RiskConfig = RiskCategories_Config,
+				    
+				    // Count mentions for each risk category
+				    WithMentions = Table.AddColumn(RiskConfig, "Mentions", each 
+				        fnCountPattern(RiskText, [Search_Pattern]), Int64.Type),
+				    
+				    // Get max mentions for normalization
+				    MaxMentions = List.Max(WithMentions[Mentions]),
+				    
+				    // Calculate Likelihood based on mention frequency
+				    // Higher mentions = higher likelihood, normalized to 1-5 scale
+				    WithLikelihood = Table.AddColumn(WithMentions, "Likelihood", each 
+				        let
+				            mentionRatio = if MaxMentions = 0 then 0 else [Mentions] / MaxMentions,
+				            // Score: 1-5 based on percentile of mentions
+				            score = if mentionRatio >= 0.7 then 5
+				                    else if mentionRatio >= 0.5 then 4
+				                    else if mentionRatio >= 0.3 then 3
+				                    else if mentionRatio >= 0.1 then 2
+				                    else 1
+				        in
+				            score, Int64.Type),
+				    
+				    // Calculate Impact - uses Base_Impact adjusted by severity language in text
+				    WithImpact = Table.AddColumn(WithLikelihood, "Impact", each 
+				        let
+				            // Count severity indicators in the full risk text
+				            highImpactCount = fnCountPattern(RiskText, "significant|material|substantial|severe|major|critical|adverse"),
+				            lowImpactCount = fnCountPattern(RiskText, "minor|limited|marginal|minimal|slight"),
+				            
+				            // Adjustment based on language (applies globally, could be refined per-category)
+				            adjustment = if highImpactCount > lowImpactCount * 2 then 1 else 0,
+				            
+				            finalImpact = List.Min({5, [Base_Impact] + adjustment})
+				        in
+				            finalImpact, Int64.Type),
+				    
+				    // Calculate Risk Score
+				    WithRiskScore = Table.AddColumn(WithImpact, "Risk_Score", each 
+				        [Likelihood] * [Impact], Int64.Type),
+				    
+				    // Add Risk Level classification
+				    WithRiskLevel = Table.AddColumn(WithRiskScore, "Risk_Level", each 
+				        if [Risk_Score] >= 20 then "Critical"
+				        else if [Risk_Score] >= 15 then "High"
+				        else if [Risk_Score] >= 9 then "Medium"
+				        else if [Risk_Score] >= 4 then "Low"
+				        else "Very Low", type text),
+				    
+				    // Add Likelihood Label
+				    WithLikelihoodLabel = Table.AddColumn(WithRiskLevel, "Likelihood_Label", each 
+				        if [Likelihood] = 1 then "1 - Very Low"
+				        else if [Likelihood] = 2 then "2 - Low"
+				        else if [Likelihood] = 3 then "3 - Medium"
+				        else if [Likelihood] = 4 then "4 - High"
+				        else "5 - Very High", type text),
+				    
+				    // Add Impact Label
+				    WithImpactLabel = Table.AddColumn(WithLikelihoodLabel, "Impact_Label", each 
+				        if [Impact] = 1 then "1 - Very Low"
+				        else if [Impact] = 2 then "2 - Low"
+				        else if [Impact] = 3 then "3 - Medium"
+				        else if [Impact] = 4 then "4 - High"
+				        else "5 - Very High", type text),
+				    
+				    // Add Risk Color for conditional formatting
+				    WithColor = Table.AddColumn(WithImpactLabel, "Risk_Color", each 
+				        if [Risk_Score] >= 20 then "#FF0000"
+				        else if [Risk_Score] >= 15 then "#FF6B6B"
+				        else if [Risk_Score] >= 9 then "#FFE66D"
+				        else if [Risk_Score] >= 4 then "#4ECDC4"
+				        else "#90EE90", type text),
+				    
+				    // Add Quadrant classification
+				    WithQuadrant = Table.AddColumn(WithColor, "Quadrant", each 
+				        if [Likelihood] >= 4 and [Impact] >= 4 then "High Likelihood / High Impact"
+				        else if [Likelihood] >= 4 and [Impact] < 4 then "High Likelihood / Low Impact"
+				        else if [Likelihood] < 4 and [Impact] >= 4 then "Low Likelihood / High Impact"
+				        else "Low Likelihood / Low Impact", type text),
+				    
+				    // Remove helper columns and sort by risk score
+				    CleanedTable = Table.RemoveColumns(WithQuadrant, {"Search_Pattern", "Base_Impact"}),
+				    SortedTable = Table.Sort(CleanedTable, {{"Risk_Score", Order.Descending}})
+				in
+				    SortedTable
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

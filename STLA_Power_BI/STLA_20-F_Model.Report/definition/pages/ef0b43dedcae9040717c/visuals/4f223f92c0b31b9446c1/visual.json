@@ -1,0 +1,107 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "4f223f92c0b31b9446c1",
+  "position": {
+    "x": 41.462284807655237,
+    "y": 229.42464260235897,
+    "z": 4000,
+    "height": 490.63703689058696,
+    "width": 728.354136454477,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "AOI_FY2025"
+                    }
+                  },
+                  "Property": "Index"
+                }
+              },
+              "queryRef": "Sum(AOI_FY2025.Index)",
+              "nativeQueryRef": "Index",
+              "displayName": "Index"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "AOI_FY2025"
+                    }
+                  },
+                  "Property": "2025"
+                }
+              },
+              "queryRef": "AOI_FY2025.2025",
+              "nativeQueryRef": "2025"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "AOI_FY2025"
+                    }
+                  },
+                  "Property": "STELLANTIS"
+                }
+              },
+              "queryRef": "AOI_FY2025.STELLANTIS",
+              "nativeQueryRef": "STELLANTIS"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "AOI_FY2025"
+                  }
+                },
+                "Property": "Index"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "53.71602134796846D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Sum(AOI_FY2025.Index)"
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {}
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

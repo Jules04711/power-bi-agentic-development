@@ -1,0 +1,21 @@
+table FiscalYear
+	lineageTag: fee85250-e63f-4eea-b482-17d665da7250
+
+	column FiscalYear
+		dataType: double
+		lineageTag: 1d3beb4d-5d20-4653-857c-7584bf50e703
+		summarizeBy: sum
+		sourceColumn: FiscalYear
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition FiscalYear = m
+		mode: import
+		source = 2025 meta [IsParameterQuery=true, Type="Number", IsParameterQueryRequired=true]
+
+	annotation PBI_ResultType = Number
+
+	annotation PBI_NavigationStepName = Navigation
+

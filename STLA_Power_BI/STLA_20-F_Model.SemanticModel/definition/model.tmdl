@@ -1,0 +1,55 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+queryGroup 'SEC Queries'
+
+	annotation PBI_QueryGroupOrder = 1
+
+queryGroup 'EDGAR 10-K'
+
+	annotation PBI_QueryGroupOrder = 2
+
+/// 10-K Text Analysis, HeatMap Data
+queryGroup 'Text Analysis'
+
+	annotation PBI_QueryGroupOrder = 3
+
+annotation PBI_QueryOrder = ["CIK_Lookup","20F_URL_Path","AOI_FY2025","Subsidiaries","20F_EDGAR_API","20-F","FiscalYear","fxGetEntities","CIK1","Company_Name","Filings","Company_Info","20F_Filing_Summary","Significant Accounting Policies","20f_full_text","20f_risk_section","RiskCategories_Config","fnCountPattern","risk_heatmap"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_ProTooling = ["TMDLView_Desktop","DevMode"]
+
+ref table CIK_Lookup
+ref table DateTableTemplate_bc53eff6-2cbe-4753-985f-78a23ffdfcbd
+ref table 20F_URL_Path
+ref table Subsidiaries
+ref table LocalDateTable_40952e81-a547-4fa3-af86-6ccb90c40d56
+ref table LocalDateTable_1a651386-880b-4951-9c01-5794cae81844
+ref table 20F_EDGAR_API
+ref table LocalDateTable_c66ed359-3be5-4e3b-a32d-5438c14f428a
+ref table LocalDateTable_1b65a3b8-c669-40f9-994a-ee3e01b09b09
+ref table LocalDateTable_1d857d04-f1e6-452e-8e95-9eca4458dfbd
+ref table 20-F
+ref table LocalDateTable_b7a7ee13-618b-40ab-a5ea-37ff69f02ddd
+ref table LocalDateTable_30ee5d0d-5350-417e-8a92-e381a4714ccc
+ref table FiscalYear
+ref table Company_Name
+ref table Filings
+ref table Company_Info
+ref table 20F_Filing_Summary
+ref table 'Significant Accounting Policies'
+ref table LocalDateTable_c65fd1d9-7618-4d9b-8771-dd4725909678
+ref table Date
+ref table risk_heatmap
+ref table AOI_FY2025
+ref table Region
+ref table AdjustmentBridge
+
+ref cultureInfo en-US
+

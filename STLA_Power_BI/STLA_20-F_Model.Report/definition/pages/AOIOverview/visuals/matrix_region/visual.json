@@ -1,0 +1,261 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "matrix_region",
+  "position": {
+    "x": 20,
+    "y": 240,
+    "z": 3001,
+    "height": 240,
+    "width": 620,
+    "tabOrder": 3001
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Region"
+                    }
+                  },
+                  "Property": "Region"
+                }
+              },
+              "queryRef": "Region.Region",
+              "nativeQueryRef": "Region",
+              "active": true
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "AOI_FY2025"
+                    }
+                  },
+                  "Property": "Region Net Revenues"
+                }
+              },
+              "queryRef": "AOI_FY2025.Region Net Revenues",
+              "nativeQueryRef": "Region Net Revenues"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "AOI_FY2025"
+                    }
+                  },
+                  "Property": "Region AOI"
+                }
+              },
+              "queryRef": "AOI_FY2025.Region AOI",
+              "nativeQueryRef": "Region AOI"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "AOI_FY2025"
+                    }
+                  },
+                  "Property": "Region AOI Margin %"
+                }
+              },
+              "queryRef": "AOI_FY2025.Region AOI Margin %",
+              "nativeQueryRef": "Region AOI Margin %"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "AOI_FY2025"
+                    }
+                  },
+                  "Property": "Region Pro-Forma AOI"
+                }
+              },
+              "queryRef": "AOI_FY2025.Region Pro-Forma AOI",
+              "nativeQueryRef": "Region Pro-Forma AOI"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Region"
+                  }
+                },
+                "Property": "Sort"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "101.29858283107998D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "AOI_FY2025.Region Pro-Forma AOI"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "97.88655611694125D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "AOI_FY2025.Region AOI Margin %"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "58.59026737986866D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "AOI_FY2025.Region AOI"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "104.94442838582518D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "AOI_FY2025.Region Net Revenues"
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {}
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Region comparison - AOI, revenue, margin, pro-forma'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "12D"
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "radius": {
+              "expr": {
+                "Literal": {
+                  "Value": "6D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

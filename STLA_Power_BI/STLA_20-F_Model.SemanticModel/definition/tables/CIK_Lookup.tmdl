@@ -1,0 +1,37 @@
+table CIK_Lookup
+	lineageTag: 323d1563-0af5-4f09-b618-28f6960fdeac
+
+	column 'Company Name'
+		dataType: string
+		lineageTag: f1c05c4e-af35-4872-8258-db7a739f0a74
+		summarizeBy: none
+		sourceColumn: Company Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column CIK
+		dataType: string
+		lineageTag: e025f4f7-5a54-4ecc-a8dd-e6ad23e0ac5e
+		summarizeBy: none
+		sourceColumn: CIK
+
+		annotation SummarizationSetBy = Automatic
+
+	partition CIK_Lookup = m
+		mode: import
+		queryGroup: 'SEC Queries'
+		source =
+				let
+				    Source =
+				Csv.Document(Web.Contents("https://www.sec.gov/Archives/edgar/cik-lookup-data.txt"),[Delimiter=":", Columns=4, Encoding=1252,QuoteStyle=QuoteStyle.None]),
+				    #"Renamed Columns" = Table.RenameColumns(Source,{{"Column1", "Company Name"}, {"Column2", "CIK"}}),
+				    #"Removed Other Columns" = Table.SelectColumns(#"Renamed Columns",{"Company Name", "CIK"}),
+				    #"Filtered Rows" = Table.SelectRows(#"Removed Other Columns", each [Company Name] <> null and [Company Name] <> ""),
+				    #"Removed Duplicates" = Table.Distinct(#"Filtered Rows", {"Company Name"})
+				in
+				    #"Removed Duplicates"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

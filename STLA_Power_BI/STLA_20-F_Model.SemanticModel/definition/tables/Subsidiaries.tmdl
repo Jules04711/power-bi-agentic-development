@@ -1,0 +1,311 @@
+table Subsidiaries
+	lineageTag: 6643fd9d-3d4a-4c0a-bf4f-c060b44044b0
+
+	column filingDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: d03e01bd-c485-4798-bcb8-3ca10f7153e3
+		summarizeBy: none
+		sourceColumn: filingDate
+
+		variation Variation
+			isDefault
+			relationship: 9876b2d9-cff2-4e45-bf88-cfe4a1875fff
+			defaultHierarchy: LocalDateTable_40952e81-a547-4fa3-af86-6ccb90c40d56.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column reportDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: cdd2ab8b-9271-4f5c-86ba-17e0b05b5f92
+		summarizeBy: none
+		sourceColumn: reportDate
+
+		variation Variation
+			isDefault
+			relationship: 9b0f3b6c-872e-448a-8de9-20600d0a8804
+			defaultHierarchy: LocalDateTable_1a651386-880b-4951-9c01-5794cae81844.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column form
+		dataType: string
+		lineageTag: 82a16348-3597-4d8f-9774-77525273cf6f
+		summarizeBy: none
+		sourceColumn: form
+
+		annotation SummarizationSetBy = Automatic
+
+	column DocumentLink
+		dataType: string
+		lineageTag: 561a9a30-dd49-4c98-b273-1049fee42454
+		dataCategory: WebUrl
+		summarizeBy: none
+		sourceColumn: DocumentLink
+
+		annotation SummarizationSetBy = Automatic
+
+	column FilingLink
+		dataType: string
+		lineageTag: 3f24b27d-d943-4133-b6aa-73affce21ee5
+		summarizeBy: none
+		sourceColumn: FilingLink
+
+		annotation SummarizationSetBy = Automatic
+
+	column Subsidiary
+		dataType: string
+		lineageTag: c854ef43-0ad7-4893-afa2-b91cfbec7544
+		summarizeBy: none
+		sourceColumn: Subsidiary
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Jurisdiction of Subsidiary'
+		dataType: string
+		lineageTag: b6d2403f-92b5-42a9-bbf2-e91b1851983a
+		dataCategory: Country
+		summarizeBy: none
+		sourceColumn: Jurisdiction of Subsidiary
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation __PBI_SemanticLinks = [{"LinkTarget":{"TableName":"Subsidiaries","TableItemName":"Jurisdiction of Subsidiary (groups)","ObjectType":4},"LinkType":"UsedInGroup"}]
+
+	column 'Jurisdiction of Subsidiary (groups)' =
+			SWITCH(
+				TRUE,
+				ISBLANK('Subsidiaries'[Jurisdiction of Subsidiary]),
+				"(Blank)",
+				'Subsidiaries'[Jurisdiction of Subsidiary] IN {"EGYPT",
+					"TANZANIA"},
+				"Africa",
+				'Subsidiaries'[Jurisdiction of Subsidiary] IN {"INDONESIA",
+					"PHILIPPINES",
+					"SINGAPORE"},
+				"Asia",
+				'Subsidiaries'[Jurisdiction of Subsidiary] IN {"IRELAND",
+					"NETHERLANDS",
+					"UNITED KINGDOM"},
+				"Europe",
+				'Subsidiaries'[Jurisdiction of Subsidiary] IN {"DUBAI, UAE",
+					"LEBANON",
+					"SAUDI ARABIA"},
+				"Middle East",
+				'Subsidiaries'[Jurisdiction of Subsidiary] IN {"COLORADO",
+					"DELAWARE",
+					"MARYLAND",
+					"VIRGINIA"},
+				"United States",
+				'Subsidiaries'[Jurisdiction of Subsidiary]
+			)
+		lineageTag: 7d79a009-507d-4a0c-8429-9da547f2e4ec
+		summarizeBy: none
+
+		extendedProperty GroupingMetadata =
+				{
+				  "version": 0,
+				  "groupedColumns": [
+				    {
+				      "Column": {
+				        "Expression": {
+				          "SourceRef": {
+				            "Entity": "Subsidiaries"
+				          }
+				        },
+				        "Property": "Jurisdiction of Subsidiary"
+				      }
+				    }
+				  ]
+				}
+
+		annotation GroupingDesignState = {"Version":0,"Sources":[{"Name":"s","Entity":"Subsidiaries"}],"GroupedColumns":[{"Column":{"Expression":{"SourceRef":{"Source":"s"}},"Property":"Jurisdiction of Subsidiary"}}],"GroupItems":[{"DisplayName":"(Blank)","BlankDefaultPlaceholder":true},{"DisplayName":"Africa","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"s"}},"Property":"Jurisdiction of Subsidiary"}}],"Values":[[{"Literal":{"Value":"'EGYPT'"}}],[{"Literal":{"Value":"'TANZANIA'"}}]]}}},{"DisplayName":"Asia","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"s"}},"Property":"Jurisdiction of Subsidiary"}}],"Values":[[{"Literal":{"Value":"'INDONESIA'"}}],[{"Literal":{"Value":"'PHILIPPINES'"}}],[{"Literal":{"Value":"'SINGAPORE'"}}]]}}},{"DisplayName":"Europe","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"s"}},"Property":"Jurisdiction of Subsidiary"}}],"Values":[[{"Literal":{"Value":"'IRELAND'"}}],[{"Literal":{"Value":"'NETHERLANDS'"}}],[{"Literal":{"Value":"'UNITED KINGDOM'"}}]]}}},{"DisplayName":"Middle East","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"s"}},"Property":"Jurisdiction of Subsidiary"}}],"Values":[[{"Literal":{"Value":"'DUBAI, UAE'"}}],[{"Literal":{"Value":"'LEBANON'"}}],[{"Literal":{"Value":"'SAUDI ARABIA'"}}]]}}},{"DisplayName":"United States","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"s"}},"Property":"Jurisdiction of Subsidiary"}}],"Values":[[{"Literal":{"Value":"'COLORADO'"}}],[{"Literal":{"Value":"'DELAWARE'"}}],[{"Literal":{"Value":"'MARYLAND'"}}],[{"Literal":{"Value":"'VIRGINIA'"}}]]}}}]}
+
+		annotation SummarizationSetBy = Automatic
+
+	column core_type
+		dataType: string
+		lineageTag: c4f10317-34b7-425a-91e6-0b96b733dc98
+		summarizeBy: none
+		sourceColumn: core_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column Continent = ```
+			
+			SWITCH(
+			    TRUE(),
+			    -- North America (US States & Canada)
+			    'Subsidiaries'[Jurisdiction of Subsidiary] IN {
+			        "DELAWARE", "NEVADA", "OHIO", "TEXAS", "ARIZONA", "UTAH", 
+			        "ILLINOIS", "MICHIGAN", "HAWAII", "NOVA SCOTIA", "ALBERTA", 
+			        "CANADA", "CAYMAN ISLANDS", "BERMUDA", "MEXICO", "USA"
+			    }, "North America",
+			    
+			    -- South America
+			    'Subsidiaries'[Jurisdiction of Subsidiary] IN {
+			        "BRAZIL", "ARGENTINA", "COLOMBIA", "CHILE", "ECUADOR", 
+			        "PERU", "URUGUAY"
+			    }, "South America",
+			    
+			    -- Europe
+			    'Subsidiaries'[Jurisdiction of Subsidiary] IN {
+			        "SWITZERLAND", "GERMANY", "SPAIN", "BELGIUM", "FRANCE", 
+			        "ENGLAND AND WALES", "IRELAND", "NORWAY", "SWEDEN", "ITALY"
+			    }, "Europe",
+			    
+			    -- Asia
+			    'Subsidiaries'[Jurisdiction of Subsidiary] IN {
+			        "THAILAND", "INDIA", "CHINA", "HONG KONG", "SINGAPORE", 
+			        "JAPAN", "TAIWAN", "KOREA, REPUBLIC OF", "PHILIPPINES", 
+			        "INDONESIA", "SHANGHAI", "SAUDI ARABIA"
+			    }, "Asia",
+			    
+			    -- Middle East
+			    'Subsidiaries'[Jurisdiction of Subsidiary] IN {
+			        "DUBAI", "UNITED ARAB EMIRATES", "ISRAEL", "EGYPT"
+			    }, "Middle East",
+			    
+			    -- Australia
+			    'Subsidiaries'[Jurisdiction of Subsidiary] = "AUSTRALIA", "Australia",
+			    
+			    -- Africa
+			    'Subsidiaries'[Jurisdiction of Subsidiary] = "SOUTH AFRICA", "Africa",
+			    
+			    -- Default for unmatched
+			    "Unknown"
+			)
+			```
+		lineageTag: 7cb0181d-21e3-4429-a541-e7abe1dced2e
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column isXBRLNumeric
+		dataType: string
+		lineageTag: d38537d0-3f0e-4a16-8782-eb4c79fcac3d
+		summarizeBy: none
+		sourceColumn: isXBRLNumeric
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Ex8.1'
+		dataType: string
+		lineageTag: 8b98a336-d620-4b7b-baae-396ab4718afa
+		summarizeBy: none
+		sourceColumn: Ex8.1
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Subsidiaries = m
+		mode: import
+		source = ```
+				let
+				
+				    Source = Json.Document(Web.Contents("https://data.sec.gov/submissions/CIK" & CIK1 & ".json")),
+				
+				    filings = Source[filings],
+				
+				    recent = filings[recent],
+				
+				    #"Converted to Table" = Record.ToTable(recent),
+				
+				    #"Extracted Values" = Table.TransformColumns(#"Converted to Table", {"Value", each Text.Combine(List.Transform(_, Text.From), "||"), type text}),
+				
+				    #"Split Column by Delimiter" = Table.SplitColumn(#"Extracted Values", "Value", Splitter.SplitTextByDelimiter("||", QuoteStyle.Csv)),
+				
+				    #"Transposed Table" = Table.Transpose(#"Split Column by Delimiter"),
+				
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Transposed Table", [PromoteAllScalars=true]),
+				
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Promoted Headers",{{"accessionNumber", type text}, {"filingDate", type date}, {"reportDate", type date}, {"acceptanceDateTime", type datetime}, {"act", Int64.Type}, {"form", type text}, {"fileNumber", type text}, {"filmNumber", Int64.Type}, {"items", type text}, {"size", Int64.Type}, {"isXBRL", Int64.Type}, {"isInlineXBRL", Int64.Type}, {"primaryDocument", type text}, {"primaryDocDescription", type text}}),
+				
+				    Filter20F = Table.SelectRows(#"Changed Type1", each [form] = "20-F"),
+				    FilteredAfterYear = Table.SelectRows(Filter20F, each [reportDate] > #date(FiscalYear, 1, 1)),
+				    AddDocumentLink = Table.AddColumn(FilteredAfterYear, "DocumentLink", each 
+				        
+				        let
+				
+				            Pt1 = "https://www.sec.gov/Archives/edgar/data/" & CIK1 & "/",
+				
+				            Pt2 = Text.Replace([accessionNumber], "-", ""),
+				
+				            Pt3 = "/"&[primaryDocument],
+				
+				            Link = Pt1&Pt2&Pt3,
+				
+				            WebPage = Web.Page(Web.Contents(Link))
+				
+				        in
+				
+				            Link),
+				
+				    AddFilingLink = Table.AddColumn(AddDocumentLink, "FilingLink", each let
+				
+				            Pt1 = "https://www.sec.gov/Archives/edgar/data/" & CIK1 & "/",
+				
+				            Pt2 = Text.Replace([accessionNumber], "-", ""),
+				
+				            Pt3 = "/"&[accessionNumber]&"-index.html",
+				
+				            Link = Pt1&Pt2&Pt3,
+				
+				            WebPage = Web.Page(Web.Contents(Link)),
+				
+				            Data = WebPage{0}[Data],
+				
+				            Ex8.1 = Table.FindText([Data], "EX-8.1"),
+				
+				            DocLink = Ex8.1{0}[Document]
+				
+				        in
+				
+				            Link),
+				
+				    AddExhibitLink = Table.AddColumn(AddFilingLink, "Ex8.1", each let
+				
+				            AccessFilingData = Web.Page(Web.Contents([FilingLink])),
+				
+				            Data = AccessFilingData{0}[Data],
+				
+				            Ex8.1 = Table.FindText(Data, "EX-8.1"),
+				
+				            DocLink = Ex8.1{0}[Document],
+				
+				            Pt1 = "https://www.sec.gov/Archives/edgar/data/" & CIK1 & "/",
+				
+				            Pt2 = Text.Replace([accessionNumber], "-", ""),
+				
+				            Pt3 = "/"&DocLink,
+				
+				            Link = Pt1&Pt2&Pt3,
+				
+				            WebPage = Web.Page(Web.Contents(Link))
+				
+				        in
+				
+				            Link),
+				    
+				    #"Invoked Custom Function" = Table.AddColumn(AddExhibitLink, "Entities", each fxGetEntities([Ex8.1])),
+				
+				    #"Removed Errors" = Table.RemoveRowsWithErrors(#"Invoked Custom Function", {"Entities"}),
+				    #"Expanded Entities" = Table.ExpandTableColumn(#"Removed Errors", "Entities", {"Column1", "Column2"}, {"Subsidiary", "Jurisdiction of Subsidiary"}),
+				    UpperTrimClean = Table.TransformColumns(#"Expanded Entities",{{"Subsidiary", Text.Upper, Text.Trim, Text.Clean, type text}, {"Jurisdiction of Subsidiary", Text.Upper, Text.Trim, Text.Clean, type text}}),
+				    RemoveHeaderRows = Table.SelectRows(UpperTrimClean, each [Subsidiary] <> "NAME OF SUBSIDIARY"),
+				    #"Removed Columns" = Table.RemoveColumns(RemoveHeaderRows,{"accessionNumber", "acceptanceDateTime", "act", "fileNumber", "filmNumber", "items", "size", "isXBRL", "isInlineXBRL", "primaryDocument", "primaryDocDescription"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Removed Columns",{{"DocumentLink", type text}, {"FilingLink", type text}, {"Ex8.1", type text}}),
+				    #"Replaced Value" = Table.ReplaceValue(#"Changed Type","#(00A0)"," ",Replacer.ReplaceText,{"Subsidiary", "Jurisdiction of Subsidiary"}),
+				    #"Filtered Rows" = Table.SelectRows(#"Replaced Value", each ([Subsidiary] <> "COMPANY NAME") and ([Jurisdiction of Subsidiary] <> null and [Jurisdiction of Subsidiary] <> "COUNTRY"))
+				in
+				    #"Filtered Rows"
+				```
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+
