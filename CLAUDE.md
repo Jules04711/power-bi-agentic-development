@@ -10,7 +10,9 @@ A **Power BI Project (PBIP)** workspace, not a software repository. There is no 
 - **PBIR** (`STLA_20-F_Model.Report/definition/**/*.json`) — report layout: pages, visuals, theme.
 - **PowerShell automation** (`STLA_Power_BI/.claude/scripts/*.ps1`) — TOM-based scripts that author the model programmatically.
 
-The parent folder name reflects the **Power BI Agentic Development** plugin ecosystem that ships the skills used here — `connect-pbid`, `pbir-cli`, `pbir-format`, `tmdl`, `pbip`. Skills are loaded with the `Skill` tool and cached at `~/.claude/plugins/cache/power-bi-agentic-development/`.
+The parent folder name reflects the **Power BI Agentic Development** plugin ecosystem that ships the skills used here — `connect-pbid`, `pbir-cli`, `pbir-format`, `tmdl`, `pbip`. Skills are loaded with the `Skill` tool and cached at `~/.claude/plugins/cache/power-bi-agentic-development/` (under a `<category>/26.20/skills/<name>/` path).
+
+On top of those granular plugin skills, this workspace ships its own **project-local enterprise skills** in `.claude/skills/` — the opinionated methodology + gating layer for building production-ready models and dashboards. They *delegate to* the plugin skills, never duplicate them. See `.claude/skills/README.md` for the index and `.claude/skills/AUTHORING.md` for the authoring contract.
 
 ## Working with the model: critical sequencing
 
@@ -112,6 +114,21 @@ The page's three forward-looking constants live in DAX (`VCP Cost Save Target 20
 - `knowledge-base/lessons-learned-best-practices.md` — persistent cross-session gotchas and working patterns (TOM/ADOMD, TMDL authoring, PBIR, DAX patterns, calculated tables, M for PDF sources, refresh order, PS 5.1 UTF-8 quirks, etc.). Read this first before any non-trivial TMDL or PBIR change; add to it after any new gotcha is discovered.
 - Skill cache: `~/.claude/plugins/cache/power-bi-agentic-development/` — the `pbi-desktop:connect-pbid` skill is the canonical reference for TOM PowerShell patterns.
 - NuGet packages (cached at `%TEMP%\tom_nuget\`): `Microsoft.AnalysisServices.retail.amd64` (TOM) and `Microsoft.AnalysisServices.AdomdClient.retail.amd64` (ADOMD.NET). Reinstall with `nuget install <pkg> -OutputDirectory $env:TEMP\tom_nuget -ExcludeVersion` if missing.
+- `.claude/skills/README.md` — index of the five project-local enterprise skills (below). `.claude/skills/AUTHORING.md` — the shared authoring contract (frontmatter schema, "delegate don't duplicate" map, cross-skill interlock order, dogfood rule).
+
+## Project-local enterprise skills (`.claude/skills/`)
+
+Five opinionated skills that take a solution from requirements to a production-ready, enterprise-grade deliverable. Each has a `SKILL.md`, deep-dive `references/*.md`, and `scripts/*.ps1` that mirror this workspace's TOM/ADOMD/`pbir` patterns. They are loaded automatically when the user's request matches their triggers, and they delegate mechanics to the plugin skills (`tmdl`, `dax`, `pbir-format`, `bpa-rules`, `connect-pbid`, etc.).
+
+| Skill | Covers | Key scripts |
+|-------|--------|-------------|
+| `semantic-model-architect` | Star schema, marked date table, storage mode, partitions/incremental refresh, naming & formatting, model hygiene | `disable-auto-datetime.ps1`, `validate-model-shape.ps1` |
+| `dax-measure-engineering` | Correct + performant + **tested** DAX, time intelligence, calc groups, format strings; researches functions at <https://learn.microsoft.com/en-us/dax/> | `test-dax.ps1`, `add-measures-from-spec.ps1` |
+| `relationship-and-model-integrity` | Cardinality, cross-filter direction, ambiguity, inactive/role-playing, RLS/OLS | `validate-relationships.ps1`, `add-relationships-from-spec.ps1`, `test-rls.ps1` |
+| `enterprise-dashboard-design` | PBIR layout/UX, theming/branding, WCAG AA accessibility, visual selection, report performance; two worked design examples in `assets/examples/` | `validate-report.ps1`, `apply-theme.ps1` |
+| `production-readiness-gate` | End-to-end orchestration + consolidated quality gate, PBIP source control, deployment/CI-CD, BPA gate | `run-quality-gate.ps1`, `pbip-backup.ps1` |
+
+Canonical end-to-end order: `power-query` (plugin) → `semantic-model-architect` → `relationship-and-model-integrity` → `dax-measure-engineering` → `enterprise-dashboard-design` → `production-readiness-gate`. The gate's `run-quality-gate.ps1` aggregates the four validators above plus `pbir validate` into a single PASS/FAIL verdict. See `knowledge-base/lessons-learned-best-practices.md` §13 for skill-authoring gotchas.
 
 ## Project-specific gotchas
 

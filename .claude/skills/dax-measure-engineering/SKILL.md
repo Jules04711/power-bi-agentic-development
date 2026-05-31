@@ -8,6 +8,8 @@ description: Author correct, performant, tested DAX for enterprise semantic mode
 
 Produces DAX that is **correct first, fast second, and always verified**. LLM-generated DAX is frequently plausible-but-wrong (see the Tabular Editor caveat in the project notes) — so every measure this skill authors is tested against the live engine before it is considered done. Delegate the deep performance framework (tiers, engine internals, xmSQL) to the plugin `dax` skill; delegate trace capture to `connect-pbid`; delegate object writes to `tmdl`. Honor `../AUTHORING.md` and `CLAUDE.md`.
 
+**Authoritative function reference:** the official DAX function library is <https://learn.microsoft.com/en-us/dax/>. Before using any function whose exact signature, arguments, return type, or evaluation-context behavior you are not certain of, **research it there first** — do not guess. See `references/dax-function-library.md` for how to look up functions efficiently (Microsoft Learn MCP, then WebFetch) and the function-group index.
+
 ## Operating procedure
 
 1. **State intent.** One sentence: what business question the measure answers and at what grain.
@@ -56,7 +58,13 @@ Confirm a non-blank numeric result.
 - `references/calculation-groups.md` — when and how; ordinal, format-string expression, selection functions.
 - `references/dax-performance-tuning.md` — diagnosis order, common fixes, when to hand off to the plugin `dax` tiers.
 - `references/dax-testing-harness.md` — how `test-dax.ps1` works and how to assert expected values.
+- `references/dax-function-library.md` — the official DAX function reference (<https://learn.microsoft.com/en-us/dax/>): how to research functions and the function-group index.
+
+## External references
+
+- **DAX function reference** — <https://learn.microsoft.com/en-us/dax/> — the canonical library of every DAX function, grouped by category (aggregation, filter, time intelligence, table, relationship, text, etc.). Use it to confirm signatures and semantics before writing unfamiliar functions.
+- **DAX glossary / operators** — <https://learn.microsoft.com/en-us/dax/dax-glossary> and the operator-reference pages under the same root.
 
 ## Related plugin skills
 
-`dax`, `connect-pbid`, `tmdl`, `bpa-rules`, `review-semantic-model`.
+`dax`, `connect-pbid`, `tmdl`, `bpa-rules`, `review-semantic-model`. For pulling authoritative excerpts from the DAX reference, the Microsoft Learn MCP tools (`microsoft_docs_search` + `microsoft_docs_fetch`) are preferred over raw `WebFetch`.

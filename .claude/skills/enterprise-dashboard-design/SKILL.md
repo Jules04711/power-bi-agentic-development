@@ -8,6 +8,8 @@ description: Build production-grade Power BI reports and dashboards in PBIR with
 
 Builds reports a professional BI team would ship: deliberate layout, branded accessible theme, the right chart for each question, and a performance budget. Decides design; delegates mechanics — PBIR JSON structure to `pbir-format`, CLI ops to `pbir-cli`, design-principle depth to `pbi-report-design`, theme edits to `modifying-theme-json`, review to `review-report`, and custom visuals to `deneb-visuals`/`svg-visuals`/`python-visuals`/`r-visuals`. Honor `../AUTHORING.md`.
 
+**Reference designs:** two worked examples ship with this skill and define the visual bar to aim for — an executive/operational overview (dark, branded) and a finance/variance report (light, IBCS). Look at them before designing a page and pick the archetype that fits the request. See `references/design-examples.md` (images in `assets/examples/`).
+
 ## Critical mechanics (thick byPath reports — this project)
 
 Per `CLAUDE.md`:
@@ -18,6 +20,7 @@ Per `CLAUDE.md`:
 
 ## Operating procedure
 
+0. **Study the reference designs.** Open `references/design-examples.md` and the two images in `assets/examples/`. Decide which archetype the request is — executive overview (Example 1) or finance/variance report (Example 2) — and target its principles.
 1. **Define the question per page.** Each page answers a specific decision. No "kitchen-sink" pages. Max ~5-8 pages.
 2. **Lay out on a grid.** Detail gradient: KPIs top-left, trends middle, detail tables bottom-right. Equal gaps everywhere (e.g. 16px) and equal edge margins (e.g. 24px) — compute positions arithmetically. Misaligned spacing is the most visible quality defect. See `references/report-layout-ux.md`.
 3. **Apply the enterprise theme** (`assets/enterprise-theme.json`) — never ship default Power BI styling. The theme carries brand colors, accessible contrast, muted palette, fonts (Segoe UI), and shadow-off defaults. Apply via `scripts/apply-theme.ps1` / `modifying-theme-json`. See `references/theme-and-branding.md`.
@@ -51,6 +54,7 @@ Confirm zero validation errors, then run the objective accessibility/layout chec
 
 ## References
 
+- `references/design-examples.md` — two worked example dashboards (executive overview + IBCS financial report) with a principle-by-principle breakdown; images in `assets/examples/`.
 - `references/report-layout-ux.md` — grid math, detail gradient, titles, spacing, page count.
 - `references/theme-and-branding.md` — theme JSON structure, brand palette, when theme vs visual.
 - `references/accessibility-checklist.md` — WCAG AA items + how to set each in PBIR.
