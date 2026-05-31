@@ -16,6 +16,7 @@ Persistent record of project-specific gotchas, working patterns, and platform qu
 10. [PBIP Project Hygiene](#10-pbip-project-hygiene)
 11. [Power Query M for PDF & Text Sources](#11-power-query-m-for-pdf--text-sources)
 12. [Refresh & Dependency Order](#12-refresh--dependency-order)
+13. [Skill Authoring (.claude/skills)](#13-skill-authoring-claudeskills)
 
 ---
 
@@ -162,3 +163,17 @@ Persistent record of project-specific gotchas, working patterns, and platform qu
 - **Chained M-table dependencies must be refreshed in dependency order.** If `risk_heatmap` ← `10k_risk_section` ← `20f_full_text`, refreshing `risk_heatmap` alone is NOT sufficient when upstream M source changed — refresh `20f_full_text` → `10k_risk_section` → `risk_heatmap` explicitly. The engine does NOT auto-cascade upstream refreshes.
 - **Refresh types**: `full` (drop + re-query + recalculate), `calculate` (DAX only — for calc tables/columns), `automatic` (engine decides), `dataOnly` (re-query but skip DAX recalc). For Power Query M changes, use `full`.
 - **Computed risk-register tables persist across PBI Desktop saves.** The `risk_heatmap` rows are saved with the model on Ctrl+S. Closing PBI Desktop without saving loses the refreshed rows, but reopening re-runs the M and reproduces them. Edits to the M source itself ARE saved to TMDL on disk before the refresh runs.
+
+## 13. Skill Authoring (.claude/skills)
+
+- **Plugin skill cache path includes a version folder.** Upstream `power-bi-agentic-development` skills live at `~/.claude/plugins/cache/power-bi-agentic-development/<category>/26.20/skills/<name>/SKILL.md` — the `26.20` sits between the category (`semantic-models`, `pbip`, `reports`, `pbi-desktop`, `tabular-editor`, `fabric-cli`, `fabric-admin`) and `skills`. Read these to mirror conventions before authoring new skills.
+- **Project-local skill structure.** A skill is `.claude/skills/<kebab-name>/SKILL.md` plus optional `references/*.md`, `scripts/*.ps1`, `assets/*`. Frontmatter is YAML with required `name` (MUST equal the directory name) and `description` (write as trigger phrasing, e.g. "Automatically invoke when the user asks to …"); `version` recommended. Body uses progressive disclosure — short summary pointing to `references/` — plus a "Related Skills" delegation section.
+- **Delegate, don't duplicate.** Methodology/gating skills should reference the plugin's granular skills by name (`tmdl`, `dax`, `power-query`, `pbir-format`, `bpa-rules`, `connect-pbid`, etc.) instead of re-implementing mechanics. The shared contract for this repo's enterprise skills is `.claude/skills/AUTHORING.md`.
+- **Resolve cross-skill references against the skills root, not the owning folder.** An orchestrator skill (e.g. `production-readiness-gate`) legitimately references sibling scripts like `semantic-model-architect/scripts/validate-model-shape.ps1`; a within-folder existence check false-positives them as missing. At runtime resolve via `$skillsRoot = Join-Path $PSScriptRoot '..\..'`.
+
+## 13. Skill Authoring (.claude/skills)
+
+- **Plugin skill cache path includes a version folder.** Upstream `power-bi-agentic-development` skills live at `~/.claude/plugins/cache/power-bi-agentic-development/<category>/26.20/skills/<name>/SKILL.md` — the `26.20` sits between the category (`semantic-models`, `pbip`, `reports`, `pbi-desktop`, `tabular-editor`, `fabric-cli`, `fabric-admin`) and `skills`. Read these to mirror conventions before authoring new skills.
+- **Project-local skill structure.** A skill is `.claude/skills/<kebab-name>/SKILL.md` plus optional `references/*.md`, `scripts/*.ps1`, `assets/*`. Frontmatter is YAML with required `name` (MUST equal the directory name) and `description` (write as trigger phrasing, e.g. "Automatically invoke when the user asks to …"); `version` recommended. Body uses progressive disclosure — short summary pointing to `references/` — plus a "Related Skills" delegation section.
+- **Delegate, don't duplicate.** Methodology/gating skills should reference the plugin's granular skills by name (`tmdl`, `dax`, `power-query`, `pbir-format`, `bpa-rules`, `connect-pbid`, etc.) instead of re-implementing mechanics. The shared contract for this repo's enterprise skills is `.claude/skills/AUTHORING.md`.
+- **Resolve cross-skill references against the skills root, not the owning folder.** An orchestrator skill (e.g. `production-readiness-gate`) legitimately references sibling scripts like `semantic-model-architect/scripts/validate-model-shape.ps1`; a within-folder existence check false-positives them as missing. At runtime resolve via `$skillsRoot = Join-Path $PSScriptRoot '..\..'`.

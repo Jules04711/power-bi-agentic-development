@@ -11,7 +11,7 @@ table 20F_URL_Path
 
 	partition 20F_URL_Path = m
 		mode: import
-		queryGroup: 'EDGAR 10-K'
+		queryGroup: 'EDGAR 20-F'
 		source =
 				let
 				
